@@ -139,3 +139,13 @@ export const fournisseursPapier = [
   { n: "Emballages D", c: "#7A2E5C", items: [["Sacs baguette", "1 000", "0,03", "30,00"], ["Boîtes pâtisserie", "200", "0,21", "42,00"]] },
   { n: "Épicerie E", c: "#5A4A8C", items: [["Sucre semoule", "25 kg", "1,02", "25,50"], ["Œufs plein air", "360", "0,19", "68,40"], ["Levure fraîche", "1 kg", "3,40", "3,40"]] },
 ];
+
+// ---------------------------------------------------------------- Acte II · Coopeo évolue
+export const acte2 = {
+  texte: "Coopeo évolue.",
+  // instants (s, relatifs à l'acte) : arrivée des pastilles, masque du wordmark, texte, départ caméra
+  pastilles: [0, 0.15, 0.3, 0.45],
+  wordmark: { start: 1.0, end: 1.8 },
+  texteA: 2.0,
+  sortie: 5.5,
+};

@@ -291,3 +291,57 @@ export const Spark: React.FC<{ size?: number; color?: string }> = ({ size = 22, 
     <path d="M12 1 L14.2 9.8 L23 12 L14.2 14.2 L12 23 L9.8 14.2 L1 12 L9.8 9.8 Z" fill={color} />
   </svg>
 );
+
+// ---------------------------------------------------------------- Logo découpé (animation de l'assemblage)
+// Les 4 pastilles et le wordmark sont des découpes du PNG officiel (aucune forme redessinée).
+// Mesures dans le PNG 1261×324 : pastilles de 126 px de diamètre.
+export const LOGO_DOTS = [
+  { key: "pink", cx: 161.5, cy: 62.5 },
+  { key: "orange", cx: 62.5, cy: 161.5 },
+  { key: "green", cx: 260.5, cy: 161.5 },
+  { key: "blue", cx: 161.5, cy: 260.5 },
+] as const;
+export const WORDMARK_X = [380, 1261] as const;
+
+export type DotState = { dx: number; dy: number; scale: number; opacity: number };
+
+export const LogoAssemble: React.FC<{
+  width: number;
+  dots: DotState[];
+  wordReveal: number; // 0 → 1 : masque de gauche à droite
+  id?: string;
+  logoSrc?: string;
+  style?: React.CSSProperties;
+}> = ({ width, dots, wordReveal, id = "LA", logoSrc = LOGO_WHITE, style }) => {
+  const h = (width * 324) / 1261;
+  const src = staticFile(logoSrc);
+  const wx0 = WORDMARK_X[0];
+  const ww = (WORDMARK_X[1] - wx0) * Math.max(0, Math.min(1, wordReveal));
+  return (
+    <svg width={width} height={h} viewBox="0 0 1261 324" style={{ overflow: "visible", display: "block", ...style }}>
+      <defs>
+        {LOGO_DOTS.map((d) => (
+          <clipPath key={d.key} id={`${id}-${d.key}`}>
+            <circle cx={d.cx} cy={d.cy} r={64} />
+          </clipPath>
+        ))}
+        <clipPath id={`${id}-word`}>
+          <rect x={wx0} y={0} width={ww} height={324} />
+        </clipPath>
+      </defs>
+      {LOGO_DOTS.map((d, i) => {
+        const s = dots[i];
+        return (
+          <g
+            key={d.key}
+            opacity={s.opacity}
+            transform={`translate(${s.dx} ${s.dy}) translate(${d.cx} ${d.cy}) scale(${s.scale}) translate(${-d.cx} ${-d.cy})`}
+          >
+            <image href={src} x={0} y={0} width={1261} height={324} clipPath={`url(#${id}-${d.key})`} />
+          </g>
+        );
+      })}
+      <image href={src} x={0} y={0} width={1261} height={324} clipPath={`url(#${id}-word)`} />
+    </svg>
+  );
+};
