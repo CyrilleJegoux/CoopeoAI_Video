@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><link rel="stylesheet" href="ai.css"><script src="lib.js"></script>
+<style>
+.node{position:absolute;transform:translate(-50%,-50%)}
+.pill{padding:18px 30px;border-radius:999px;font-weight:700;font-size:30px;white-space:nowrap;text-align:center}
+.pill.bad{background:rgba(60,40,60,.85);color:#C9B9CC;border:1.5px solid rgba(170,110,130,.5)}
+.pill.good{background:rgba(10,24,64,.88);color:#fff;border:2px solid var(--c);box-shadow:0 0 30px color-mix(in srgb,var(--c) 55%,transparent),inset 0 0 18px color-mix(in srgb,var(--c) 25%,transparent)}
+.fading{position:absolute;left:50%;top:50%;transform:translate(-50%,-135%) scale(.92);opacity:.4;filter:blur(1.5px);text-decoration:line-through;text-decoration-thickness:2px}
+.rising{opacity:.85}
+.ctr{position:absolute;left:960px;top:535px;transform:translate(-50%,-50%);text-align:center;line-height:1.2}
+.aiTxt{background:linear-gradient(180deg,#E6FAFF,#3DB8FF 70%,#2A7BFF);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(61,184,255,.7))}
+</style>
+<div class="stage">
+  <canvas id="c" width="1920" height="1080" class="fill"></canvas>
+  <div id="labels"></div>
+  <div class="ctr"><img src="symbole.png" style="width:90px"><div style="font-weight:800;font-size:40px;margin-top:10px" class="aiTxt">AI</div></div>
+  <div class="capt" style="left:0;right:0;text-align:center;bottom:46px;font-size:46px">Et si on inversait le sens ?</div>
+  <div class="vignette"></div>
+  <script>window.MODE=2;</script><script src="circle.js"></script>
+  <script>document.write(grain(72));</script>
+</div>

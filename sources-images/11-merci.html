@@ -1,0 +1,44 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="lib.js"></script>
+<style>
+.name{position:absolute;transform:translate(-50%,-50%);font-weight:600;font-size:36px;letter-spacing:-.01em;color:#EEF2FF;white-space:nowrap;text-shadow:0 0 18px rgba(120,190,255,.45)}
+.name i{position:absolute;left:50%;top:-16px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%}
+</style>
+<div class="stage">
+  <canvas id="c" width="1920" height="1080" class="fill"></canvas>
+  <div class="abs" style="left:0;right:0;top:120px;text-align:center">
+    <img src="symbole.png" style="width:64px;height:64px;display:block;margin:0 auto 26px">
+    <div style="font-weight:700;font-size:50px;letter-spacing:-.015em">Merci à celles et ceux<br>qui ont construit Coopeo.</div>
+  </div>
+  <div id="names"></div>
+  <div class="vignette"></div>
+  <script>
+    const names=['Carole','Aurore','Séverine','Rachel','Tristana','Sabine','Elodie','Laurent','Joël','Romain','Philippe','Thibault','Réda','Anthony','Brewal','Julien','Cédric','Erwan','Anthony','Cyrille'];
+    const cols=['#E01E6D','#F48C03','#0CBF88','#129BE0'];
+    // hand-placed constellation, 4 loose rows, avoiding a grid
+    const P=[[300,480],[560,430],[830,470],[1100,425],[1370,475],[1630,440],
+             [200,620],[450,590],[700,640],[950,600],[1200,650],[1450,605],[1700,650],
+             [250,780],[490,810],[730,770],[970,820],[1210,775],[1450,815],[1690,790]];
+    const ctx=document.getElementById('c').getContext('2d');
+    let g=ctx.createRadialGradient(960,560,0,960,560,1150);
+    g.addColorStop(0,'#10286A');g.addColorStop(.45,'#081540');g.addColorStop(1,'#020611');
+    ctx.fillStyle=g;ctx.fillRect(0,0,1920,1080);
+    const r=rng(41);
+    for(let i=0;i<300;i++){ctx.globalAlpha=.35*r();ctx.fillStyle='#9FD8FF';ctx.beginPath();ctx.arc(r()*1920,r()*1080,r()*1.6,0,7);ctx.fill();}
+    ctx.globalCompositeOperation='lighter';
+    // links between near neighbours
+    for(let a=0;a<P.length;a++)for(let b=a+1;b<P.length;b++){
+      const d=Math.hypot(P[a][0]-P[b][0],P[a][1]-P[b][1]); if(d>320)continue;
+      const lg=ctx.createLinearGradient(P[a][0],P[a][1]-16,P[b][0],P[b][1]-16);
+      lg.addColorStop(0,cols[a%4]);lg.addColorStop(1,cols[b%4]);
+      ctx.strokeStyle=lg;ctx.globalAlpha=.32*(1-d/320)+.06;ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(P[a][0],P[a][1]-16);ctx.lineTo(P[b][0],P[b][1]-16);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    const N=document.getElementById('names');
+    names.forEach((n,i)=>{
+      const c=cols[i%4];
+      N.insertAdjacentHTML('beforeend',`<div class="name" style="left:${P[i][0]}px;top:${P[i][1]+12}px"><i style="background:${c};box-shadow:0 0 12px 3px ${c}"></i>${n}</div>`);
+    });
+  </script>
+  <script>document.write(grain(41));</script>
+</div>

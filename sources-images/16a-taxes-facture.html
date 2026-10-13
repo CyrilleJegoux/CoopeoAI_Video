@@ -1,0 +1,65 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><link rel="stylesheet" href="ai.css"><script src="lib.js"></script>
+<style>
+.pdf{position:absolute;left:70px;top:120px;width:1180px;background:#fff;color:#111;font-family:Arial,"Liberation Sans",Helvetica,sans-serif;font-size:14px;padding:22px 26px;box-shadow:0 40px 90px rgba(0,0,0,.55);transform:perspective(2400px) rotateY(4deg);transform-origin:left center}
+.pdf table{border-collapse:collapse;width:100%}
+.pdf .h td{font-weight:700;border-bottom:1.5px solid #222;padding:4px 6px;font-size:14px}
+.pdf td{padding:2px 6px;vertical-align:top;line-height:1.35}
+.pdf .r{text-align:right}
+.pdf .sub{color:#333;font-size:13px}
+.pdf .tax td{padding:3px 6px}
+.box td{border:1px solid #222;padding:4px 8px}
+tr.prod td{}
+</style>
+<div class="stage">
+  <div class="fill bgAI"></div>
+  <div class="pdf" id="pdf">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-weight:700;font-size:20px">Grossiste Viandes ●●●●●</div><div style="font-size:13px;color:#444;text-align:right">Client : Restaurant ●●●●●<br>Facture hebdomadaire</div></div>
+    <table id="lines">
+      <tr class="h"><td>Code</td><td>Produit</td><td class="r">Qté</td><td class="r">Poids</td><td class="r">P.U.</td><td class="r">P.U. net</td><td class="r">Montant</td></tr>
+      <tr><td colspan="7" style="font-weight:700;padding-top:10px">Bon de Livraison N° 19●●91 - Du : 25-09-2026</td></tr>
+    </table>
+    <div style="font-weight:700;margin:14px 0 6px">Taxe</div>
+    <table class="tax" id="tax"></table>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px">
+      <table class="box" style="width:420px"><tr><td style="font-weight:700">Total H.T.</td><td class="r">1 771.92</td></tr><tr><td style="font-weight:700">Total T.V.A.</td><td class="r">97.46</td></tr><tr><td style="font-weight:700">Total T.T.C.</td><td class="r">1 869.38</td></tr></table>
+    </div>
+  </div>
+  <canvas id="fx" width="1920" height="1080" class="fill" style="pointer-events:none"></canvas>
+  <div id="chips"></div>
+  <div class="capt" style="left:1330px;top:70px;width:560px;font-size:48px;line-height:1.08">Taxes en bas<br>de facture ?</div>
+  <div class="vignette"></div>
+  <script>
+  const P=[['070015','SUPREME POULET SV ABATTOIR L','Origine France Agrément abattoir: FR ●● ●●● ●●● CE','2','10.348','7.8500','81.23','v'],
+    ['060091','SAUCISSE FRANCFORT S/ATM FR','Origine FRANCE Agrément abattoir: FR ●● ●●● ●●● CE','1','0.605','7.7000','4.66','p'],
+    ['050313','ENTRECOTE PIECE SV VBF','VBF Agrément abattoir: FR ●● ●●● ●●●','5','9.105','22.9000','208.50','b'],
+    ['030011','RIS VEAU GORGE SV FR','VF Agrément abattoir: FR ●● ●●● ●●● CE','1','0.825','24.5000','20.21','c'],
+    ['050327','PAVE ONGLET BLACK ANGUS','Abattu : IRLANDE - IRLANDE IRLANDE','5','5.665','20.5000','116.13','b'],
+    ['050252','FILET BOEUF PAD SV VBF','Abattu : ALLEMAGNE - ALLEMAGNE ALLEMAGNE','5','7.245','21.5000','155.77','b']];
+  const T=document.getElementById('lines');
+  P.forEach(p=>T.insertAdjacentHTML('beforeend',`<tr class="prod" data-k="${p[7]}"><td>${p[0]}</td><td>${p[1]}<div class="sub">${p[2]}</div></td><td class="r">${p[3]}</td><td class="r">${p[4]}</td><td class="r">${p[5]}</td><td class="r">${p[5]}</td><td class="r">${p[6]}</td></tr>`));
+  const X=[['R.S.D.','32','71.491','0.002000','0.14','#129BE0','r'],['INTERBEV BOVINS S/OS FR','35','45.530','0.119700','5.45','#F48C03','b'],['INTERBEV VEAU S/OS FR','14','19.975','0.074900','1.50','#0CBF88','c'],['INAPORC CVE','18','51.516','0.023000','1.18','#E01E6D','p']];
+  const TX=document.getElementById('tax');
+  X.forEach(x=>TX.insertAdjacentHTML('beforeend',`<tr data-t="${x[6]}"><td style="width:70px"></td><td style="width:380px">${x[0]}</td><td class="r">${x[1]}</td><td class="r">${x[2]}</td><td class="r">${x[3]}</td><td class="r">${x[4]}</td></tr>`));
+  // AI: frame the tax block, stream each tax up to its product lines
+  const fx=document.getElementById('fx').getContext('2d');
+  const tb=TX.getBoundingClientRect();
+  fx.strokeStyle='#3DB8FF';fx.lineWidth=4;fx.shadowColor='#3DB8FF';fx.shadowBlur=22;fx.strokeRect(tb.left-8,tb.top-6,tb.width+16,tb.height+12);
+  fx.globalCompositeOperation='lighter';
+  X.forEach(x=>{
+    const row=TX.querySelector(`tr[data-t="${x[6]}"]`).getBoundingClientRect();
+    const sx=row.right+4, sy=row.top+row.height/2;
+    const targets=[...document.querySelectorAll('tr.prod')].filter(tr=>x[6]==='r'?['c','p'].includes(tr.dataset.k):tr.dataset.k===x[6]);
+    targets.forEach((tr,k)=>{const q=tr.getBoundingClientRect();const tx=q.right+6, ty=q.top+12;
+      for(let s=0;s<5;s++){fx.strokeStyle=x[5];fx.shadowColor=x[5];fx.shadowBlur=10;fx.globalAlpha=s===2?.95:.22;fx.lineWidth=s===2?2.4:1.2;
+        fx.beginPath();fx.moveTo(sx,sy);fx.bezierCurveTo(sx+60+s*6+k*10,sy-30,tx+70+s*5+k*8,ty+30,tx,ty);fx.stroke();}
+      fx.globalAlpha=1;fx.fillStyle=x[5];fx.beginPath();fx.arc(tx,ty,5,0,7);fx.fill();});
+  });
+  fx.globalAlpha=1;fx.globalCompositeOperation='source-over';
+  const SP='<svg class="spark" viewBox="0 0 24 24"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#8FE3FF"/></svg>';
+  const C=document.getElementById('chips');
+  [['Interbev bovins','0,1197 €/kg → bœuf','#F48C03',320],['Interbev veau','0,0749 €/kg → veau','#0CBF88',430],['Inaporc','0,023 €/kg → porc','#E01E6D',540],['R.S.D.','0,002 €/kg → veau et porc','#129BE0',650]].forEach(([k,m,c,y])=>
+    C.insertAdjacentHTML('beforeend',`<div class="chip" style="left:1330px;top:${y}px;border-color:${c}"><span style="width:14px;height:14px;border-radius:4px;background:${c};box-shadow:0 0 10px ${c}"></span><span class="k" style="color:#fff">${k}</span><span class="m" style="font-size:18px;color:#C9D6F5">${m}</span></div>`));
+  C.insertAdjacentHTML('beforeend',`<div style="position:absolute;left:1330px;top:770px;width:540px;font-size:24px;color:#C9D6F5;line-height:1.35">${SP.replace('class="spark"','class="spark" style="vertical-align:-3px;margin-right:8px"')}Coopeo AI les ventile sur chaque ligne produit, au kilo près.</div>`);
+  </script>
+  <script>document.write(grain(81));</script>
+</div>

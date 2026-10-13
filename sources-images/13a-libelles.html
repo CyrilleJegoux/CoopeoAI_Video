@@ -1,0 +1,50 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><link rel="stylesheet" href="ai.css"><script src="lib.js"></script>
+<div class="stage">
+  <div class="fill bgAI"></div>
+  <canvas id="fx" width="1920" height="1080" class="fill"></canvas>
+  <div id="docs"></div>
+  <div class="capt" style="left:0;right:0;text-align:center;bottom:70px">Trois libellés. Un seul produit.</div>
+  <div class="vignette"></div>
+  <script>
+  const SP='<svg class="spark" viewBox="0 0 24 24"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#8FE3FF"/></svg>';
+  const D=[
+    {x:90,y:90,r:-3,sup:'Hygiène Pro A',num:'F-20931',rows:[['Sac poubelle 100 L','10','rlx','4,90'],['EM Bob 2P 450F','24','pièce','2,15'],['Savon mains 5 L','2','bidon','12,80']],hit:1,chip:['1 pièce = 1 rouleau','2,15 € / rouleau']},
+    {x:690,y:60,r:1.5,sup:'Distri Emballage B',num:'2026-1184',rows:[['Gants nitrile M','4','boîte','6,20'],['Bobine 450 feuilles 2 plis','30','rouleau','1,98'],['Film étirable','2','rouleau','9,40']],hit:1,chip:['1 rouleau','1,98 € / rouleau']},
+    {x:1290,y:100,r:3,sup:'CHR Fournitures C',num:'FC-77812',rows:[['Essuie Main 450 - 2P x 6','5','carton','11,40'],['Liquide vaisselle 5 L','3','bidon','8,90'],['Éponges x10','2','lot','3,60']],hit:0,chip:['1 carton = 6 rouleaux','11,40 / 6 = 1,90 €']},
+  ];
+  const H=document.getElementById('docs');
+  D.forEach((d,i)=>{
+    const rows=d.rows.map((r,k)=>`<tr class="${k===d.hit?'hit':'dim'}"><td>${r[0]}</td><td class="n">${r[1]}</td><td>${r[2]}</td><td class="n">${r[3]} €</td></tr>`).join('');
+    H.insertAdjacentHTML('beforeend',`<div class="doc" id="d${i}" style="left:${d.x}px;top:${d.y}px;width:540px;transform:rotate(${d.r}deg)">
+      <div class="hd"><div><div class="sup">${d.sup}</div><div style="height:6px;width:180px;background:#d3dae6;border-radius:3px;margin-top:9px"></div></div><div class="meta"><b style="color:#1a2238;letter-spacing:.12em">FACTURE</b><br>N° ${d.num}</div></div>
+      <table><tr class="th"><td>Désignation</td><td class="n">Qté</td><td>Unité</td><td class="n">P.U. HT</td></tr>${rows}</table><div style="height:60px"></div></div>`);
+  });
+  // chips under each highlighted line
+  const fx=document.getElementById('fx').getContext('2d'); fx.globalCompositeOperation='lighter';
+  const target=[960,760];
+  const cols=['#F48C03','#E01E6D','#0CBF88'];
+  D.forEach((d,i)=>{
+    const tr=document.querySelectorAll(`#d${i} tr`)[d.hit+1].getBoundingClientRect();
+    const cx=tr.left+tr.width/2, cy=tr.bottom;
+    const chipY=cy+150;
+    H.insertAdjacentHTML('beforeend',`<div class="chip" style="left:${cx}px;top:${chipY}px;transform:translateX(-50%)">${SP}<span class="k">${d.chip[0]}</span><span class="m">${d.chip[1]}</span></div>`);
+    // link line from row to chip
+    fx.strokeStyle='#3DB8FF';fx.lineWidth=2.5;fx.shadowColor='#3DB8FF';fx.shadowBlur=14;fx.setLineDash([2,9]);fx.lineCap='round';
+    fx.beginPath();fx.moveTo(cx,cy+4);fx.lineTo(cx,chipY);fx.stroke();fx.setLineDash([]);
+    // convergence streams from chip to target
+    const sy=chipY+64;
+    for(let s=0;s<14;s++){
+      const off=(s-7)*3;
+      const lg=fx.createLinearGradient(cx,sy,target[0],target[1]);lg.addColorStop(0,cols[i]);lg.addColorStop(1,'rgba(61,184,255,.9)');
+      fx.strokeStyle=lg;fx.globalAlpha=.12+.05*(s%3);fx.lineWidth=1.4;fx.shadowBlur=10;fx.shadowColor=cols[i];
+      fx.beginPath();fx.moveTo(cx+off,sy);fx.bezierCurveTo(cx+off,sy+120,target[0]+off*2,target[1]-140,target[0]+off*.4,target[1]);fx.stroke();
+    }
+    fx.globalAlpha=1;
+  });
+  // merge node
+  let g=fx.createRadialGradient(target[0],target[1],0,target[0],target[1],120);
+  g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.15,'rgba(160,230,255,.9)');g.addColorStop(1,'rgba(61,184,255,0)');
+  fx.fillStyle=g;fx.beginPath();fx.arc(target[0],target[1],120,0,7);fx.fill();
+  </script>
+  <script>document.write(grain(61));</script>
+</div>

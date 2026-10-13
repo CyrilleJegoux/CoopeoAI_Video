@@ -1,0 +1,19 @@
+@font-face{font-family:"Manrope";font-weight:400;src:url(node_modules/@fontsource/manrope/files/manrope-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:600;src:url(node_modules/@fontsource/manrope/files/manrope-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:700;src:url(node_modules/@fontsource/manrope/files/manrope-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:800;src:url(node_modules/@fontsource/manrope/files/manrope-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"JBM";font-weight:400;src:url(node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"JBM";font-weight:600;src:url(node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-600-normal.woff2) format("woff2")}
+:root{
+  --night:#070D22; --pink:#E01E6D; --orange:#F48C03; --green:#0CBF88; --blue:#129BE0;
+  --electric:#3DB8FF; --electric-hot:#BFF0FF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:"Manrope",sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden}
+.abs{position:absolute}
+.fill{position:absolute;inset:0}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.10;mix-blend-mode:overlay;z-index:50}
+.vignette{position:absolute;inset:0;pointer-events:none;z-index:49;background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
+.caption{position:absolute;left:0;right:0;bottom:92px;text-align:center;font-weight:600;font-size:54px;letter-spacing:-.01em;z-index:40}

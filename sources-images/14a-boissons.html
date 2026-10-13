@@ -1,0 +1,72 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><link rel="stylesheet" href="ai.css"><script src="lib.js"></script>
+<style>
+.pdf{position:absolute;left:60px;top:70px;width:1230px;background:#fff;color:#111;font-family:Arial,"Liberation Sans",Helvetica,sans-serif;font-size:13.5px;padding:22px 24px 26px;box-shadow:0 40px 90px rgba(0,0,0,.55);transform:perspective(2400px) rotateY(4deg);transform-origin:left center}
+.pdf .box{border:1.5px solid #222}
+.pdf table{border-collapse:collapse;width:100%}
+.pdf .hdr td{border:1px solid #222;padding:3px 6px;text-align:center;font-size:13px}
+.pdf .hdr .t td{font-weight:700}
+.pdf .lines td{border-left:1px solid #222;border-right:1px solid #222;padding:2px 6px;vertical-align:top;line-height:1.38}
+.pdf .lines tr.colh td{border:1px solid #222;font-size:12px;text-align:center;padding:10px 4px;line-height:1.1}
+.pdf .r{text-align:right;font-variant-numeric:tabular-nums}
+.pdf .sp td{height:10px}
+.pdf tr.hit td{background:rgba(61,184,255,.16)}
+</style>
+<div class="stage">
+  <div class="fill bgAI"></div>
+  <div class="pdf" id="pdf">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div><div style="font-weight:700;font-size:24px">FACTURE</div><div style="margin-top:6px;font-size:13px;color:#444">Grossiste Boissons ●●●●●</div></div>
+      <div style="text-align:right;font-weight:700;font-size:14px;margin-top:14px">COMMUNAUTE EUROPEENNE<div style="font-weight:400;font-size:12.5px;color:#444;margin-top:4px">Client : Restaurant ●●●●●</div></div>
+    </div>
+    <table class="hdr" style="margin-top:12px"><tr class="t"><td>num. réf</td><td>date liv</td><td>date fact</td><td>date échéance</td><td>transport</td></tr>
+      <tr><td><b>4●●●●●●358</b></td><td>30.09.2026</td><td>30.09.2026</td><td>31.10.2026</td><td>88●●●55</td></tr></table>
+    <div style="font-size:12.5px;margin:6px 0 12px 4px"><b>Paiement :</b>&nbsp;&nbsp; Relevé mens 30 du mois suiv · Chèque client</div>
+    <table class="lines box" id="lines">
+      <tr class="colh"><td style="text-align:left;width:34%">Désignation article <i>(8)</i></td><td>Colis</td><td>Cols</td><td>P.U.HTT</td><td>Base</td><td>Remise</td><td>Droits</td><td>Montant net HT</td><td>Consignes<br>P.U.</td><td>Consignes<br>Montant</td><td>Code<br>TVA</td></tr>
+    </table>
+  </div>
+  <canvas id="fx" width="1920" height="1080" class="fill" style="pointer-events:none"></canvas>
+  <div id="chips"></div>
+  <div class="capt" style="left:1330px;top:84px;width:560px;font-size:48px;line-height:1.08">Lire ce qui<br>n'est pas écrit.</div>
+  <div class="vignette"></div>
+  <script>
+  // [designation lines], cols, puhtt lines, base, remise, droits, net, hit
+  const L=[
+    [['10●●71 APERITIF A BASE DE VIN 15% 100CL','Remise commerciale article 100%','Prix net'],'2',['11,1335','','0,0000'],'11,134','-11,134','2,900','5,80'],
+    [['91●●0 POMMEAU 17° 70CL','Prix net'],'2',['6,7200','6,7200'],'','','1,465','16,37'],
+    [['98●●5 GIN LONDON DRY 37°5 70CL','Prix net'],'5',['6,4345','6,4345'],'','','5,072','57,53'],
+    [['11●●23 WHISKY BLEND 40° (6) 100CL','Prix net'],'3',['16,2830','16,2830'],'','','7,730','72,04','hit'],
+    [['11●●23 WHISKY BLEND 40° (6) 100CL','Remise commerciale article 100%','Prix net'],'1',['16,2830','','0,0000'],'16,283','-16,283','7,730','7,73','hit'],
+    [['11●●2 COGNAC VS 40° 70CL','Service Compris ESC 100 COL','Prix net'],'1',['37,2783','','31,2783'],'1,000','-6,000','5,410','36,69'],
+    [['10●●37 CREME DE CASSIS 15° 100CL','Prix net'],'3',['5,2525','5,2525'],'','','2,900','24,46'],
+    [['10●●38 CREME DE FRAMBOISE 15° 70CL','Prix net'],'3',['7,4140','7,4140'],'','','2,030','28,33'],
+  ];
+  const T=document.getElementById('lines');
+  L.forEach(l=>{
+    const n=l[0].length, br=a=>a.join('<br>');
+    const pad=(i)=>Array.from({length:n},(_,k)=>k===i?'':'').join('<br>');
+    const rowAt=(v,k)=>Array.from({length:n},(_,i)=>i===k?v:'&nbsp;').join('<br>');
+    T.insertAdjacentHTML('beforeend',`<tr class="sp"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr class="${l[7]||''}"><td>${br(l[0])}</td><td></td><td class="r">${l[1]}</td><td class="r">${br(l[2].map(x=>x||'&nbsp;'))}</td><td class="r">${l[3]?rowAt(l[3],1):''}</td><td class="r">${l[4]?rowAt(l[4],1):''}</td><td class="r">${rowAt(l[5],n-1)}</td><td class="r">${rowAt(l[6],n-1)}</td><td></td><td></td><td class="r">${rowAt('3',n-1)}</td></tr>`);
+  });
+  // AI annotations
+  const SP='<svg class="spark" viewBox="0 0 24 24"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#8FE3FF"/></svg>';
+  const hits=[...document.querySelectorAll('tr.hit')].map(e=>e.getBoundingClientRect());
+  const tY=hits[0].top, bot=hits[1].bottom, lX=hits[0].left, right=hits[0].right;
+  const fx=document.getElementById('fx').getContext('2d');
+  // glowing frame around the whisky lines
+  fx.strokeStyle='#3DB8FF';fx.lineWidth=4;fx.shadowColor='#3DB8FF';fx.shadowBlur=24;fx.strokeRect(lX-4,tY-4,right-lX+8,bot-tY+8);
+  const C=document.getElementById('chips');
+  const chips=[
+    ['40° · 100 cl lus dans le libellé','0,40 L d\'alcool pur',300],
+    ['Vignette Sécurité sociale','non facturée sur la ligne · 2,482 €',420],
+    ['Gratuité détectée','3 achetées + 1 offerte',540],
+  ];
+  chips.forEach(([k,m,y],i)=>{
+    C.insertAdjacentHTML('beforeend',`<div class="chip" style="left:1330px;top:${y}px;flex-direction:column;align-items:flex-start;gap:4px;padding:16px 22px"><div style="display:flex;gap:10px;align-items:center">${SP}<span class="k">${k}</span></div><span class="m" style="color:#EAF0FF;padding-left:32px">${m}</span></div>`);
+    fx.lineWidth=2.4;fx.shadowBlur=12;fx.setLineDash([2,9]);fx.lineCap='round';
+    fx.beginPath();fx.moveTo(right+6,(tY+bot)/2);fx.bezierCurveTo(right+60,(tY+bot)/2,1260,y+48,1328,y+48);fx.stroke();fx.setLineDash([]);
+  });
+  </script>
+  <script>document.write(grain(63));</script>
+</div>

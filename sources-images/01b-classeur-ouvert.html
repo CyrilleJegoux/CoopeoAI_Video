@@ -1,0 +1,57 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="lib.js"></script><script src="paper.js"></script>
+<script>document.write('<style>'+PAPER_CSS+'</style>')</script>
+<style>
+.wood{background:
+  repeating-linear-gradient(92deg,rgba(0,0,0,0) 0 38px,rgba(0,0,0,.10) 38px 40px,rgba(0,0,0,0) 40px 97px,rgba(255,220,170,.04) 97px 99px),
+  repeating-linear-gradient(91deg,rgba(0,0,0,0) 0 260px,rgba(0,0,0,.18) 260px 262px),
+  linear-gradient(180deg,#3a2614,#2a1a0c)}
+.light{background:radial-gradient(ellipse 1050px 760px at 54% 46%,rgba(255,196,120,.30),rgba(255,160,80,.08) 50%,transparent 75%);mix-blend-mode:screen}
+.shade{background:radial-gradient(ellipse 1200px 820px at 54% 46%,transparent 42%,rgba(0,0,0,.72) 100%)}
+.open{position:absolute;left:300px;top:90px;width:1360px;height:860px;transform:rotate(-2.5deg)}
+.panel{position:absolute;top:0;bottom:0;width:660px;border-radius:12px;background:
+  repeating-linear-gradient(35deg,rgba(255,255,255,.02) 0 3px,rgba(0,0,0,.03) 3px 6px),linear-gradient(135deg,#2d4f7a,#1f3a5c);box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.inside{position:absolute;inset:14px;border-radius:6px;background:linear-gradient(135deg,#9aa6b4,#7f8b99);box-shadow:inset 0 0 20px rgba(0,0,0,.25)}
+.hinge{position:absolute;left:640px;top:0;bottom:0;width:80px;background:linear-gradient(90deg,#1a3150,#2a4a72 50%,#1a3150);border-radius:4px}
+.arch{position:absolute;width:44px;height:230px;border:11px solid #c9cfd6;border-left-color:#f2f4f6;border-radius:24px;box-shadow:0 6px 10px rgba(0,0,0,.45)}
+.lever{position:absolute;left:740px;top:390px;width:130px;height:46px;border-radius:22px;background:linear-gradient(#e7eaee,#a7afb8);box-shadow:0 6px 10px rgba(0,0,0,.45)}
+.tab{position:absolute;width:70px;height:34px;border-radius:0 6px 6px 0;box-shadow:0 3px 6px rgba(0,0,0,.35)}
+.hand{font-family:Caveat;font-weight:700;color:#1d3d8f;line-height:1.05}
+</style>
+<div class="stage">
+  <div class="fill wood"></div>
+  <div class="open">
+    <div class="panel" style="left:0"><div class="inside"></div></div>
+    <div class="panel" style="left:700px"><div class="inside"></div></div>
+    <div class="hinge"></div>
+    <div id="left"></div>
+    <div id="stack"></div>
+    <div class="arch" style="left:752px;top:120px"></div><div class="arch" style="left:752px;top:520px"></div>
+    <div class="lever"></div>
+  </div>
+  <div class="fill light"></div>
+  <div class="fill shade"></div>
+  <div class="vignette"></div>
+  <script>
+    const place=(el,html,x,y,rot)=>{el.insertAdjacentHTML('beforeend',`<div style="position:absolute;left:${x}px;top:${y}px;transform:rotate(${rot}deg)">${html}</div>`)};
+    const S=document.getElementById('stack');
+    place(S,invoiceHTML(4,{w:520,h:700,tone:'#EFE8D8'}),860,90,-12);place(S,invoiceHTML(3,{w:520,h:700,tone:'#FBE3EA'}),840,40,10);
+    // messy stack on the right panel: many offset sheets
+    const tones=['#F4EEE2','#F7F2E8','#EFE8D8','#FBE3EA','#F2F0EA','#E9F0F4'];
+    [[-14,30,-6],[10,10,5],[-20,44,-9],[18,0,7],[4,36,-3],[-8,16,3]].forEach(([dx,dy,r],k)=>place(S,invoiceHTML(k+2,{w:540,h:740,tone:tones[k%tones.length]}),810+dx*3,50+dy,r));
+    place(S,invoiceHTML(1,{w:560,h:760,hl:0,note:'vérifier prix !'}),800,46,-1.5);
+    // coloured index tabs sticking out
+    [['#E01E6D',150],['#F48C03',300],['#0CBF88',480],['#129BE0',640]].forEach(([c,y])=>S.insertAdjacentHTML('beforeend',`<div class="tab" style="left:1350px;top:${y}px;background:${c}"></div>`));
+    // left panel: loose invoice + handwritten tally
+    const Lp=document.getElementById('left');
+    place(Lp,invoiceHTML(0,{w:470,stamp:true,tone:'#F7F2E8'}),60,330,-8);
+    Lp.insertAdjacentHTML('beforeend',`<div style="position:absolute;left:110px;top:60px;width:430px;height:330px;transform:rotate(4deg);background:repeating-linear-gradient(#FBFAF4 0 37px,#b9cde6 37px 38px);box-shadow:0 12px 26px rgba(0,0,0,.4);padding:22px 28px">
+      <div class="hand" style="font-size:40px;color:#B5452F">Achats mars</div>
+      <div class="hand" style="font-size:31px;margin-top:6px">farine&nbsp;&nbsp;17,75 + 21,00</div>
+      <div class="hand" style="font-size:31px">beurre&nbsp;&nbsp;<s>98,00</s> 103,00</div>
+      <div class="hand" style="font-size:31px">crème&nbsp;&nbsp;23,88</div>
+      <div class="hand" style="font-size:31px">total = <s>160,63</s> ??</div></div>`);
+    // paperclip
+    Lp.insertAdjacentHTML('beforeend','<div style="position:absolute;left:470px;top:40px;width:30px;height:90px;border:4px solid #b8c0c8;border-radius:16px;transform:rotate(12deg);box-shadow:0 3px 4px rgba(0,0,0,.4)"></div>');
+  </script>
+  <script>document.write(grain(32));</script>
+</div>

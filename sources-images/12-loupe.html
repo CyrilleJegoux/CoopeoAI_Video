@@ -1,0 +1,96 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="lib.js"></script>
+<style>
+.inv{position:absolute;left:250px;top:46px;width:780px;background:#F6F8FC;color:#1a2238;border-radius:6px;padding:38px 42px 34px;transform:rotate(-2.5deg);font-family:Manrope}
+.inv.base{box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 0 1px rgba(143,227,255,.2)}
+.ih{display:flex;justify-content:space-between;margin-bottom:22px}
+.sn{font-weight:800;font-size:28px;color:#1F5C8C}
+.ad{height:7px;background:#d3dae6;border-radius:4px;margin-top:9px}
+.ft{text-align:right;font-size:15px;color:#5d6780;line-height:1.5}
+.ft b{display:block;font-size:22px;letter-spacing:.14em;color:#1a2238}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+td{padding:6.5px 6px;border-bottom:1px solid #e1e6ef;white-space:nowrap}
+tr.th td{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6a7591;border-bottom:2px solid #9aa6c0}
+td.n{font-family:JBM;font-size:13.5px;text-align:right}
+td.no{font-family:JBM;font-size:12px;color:#8a94ab;width:28px}
+.tot{display:flex;flex-direction:column;align-items:flex-end;gap:4px;margin-top:16px;font-size:15px}
+.tot div{display:flex;gap:30px}.tot b{font-family:JBM;min-width:120px;text-align:right}
+.tick{position:absolute;right:-34px;font-size:16px;color:#3DB8FF;text-shadow:0 0 8px #3DB8FF;font-weight:800}
+tr.hit td{background:rgba(224,30,109,.10)}
+tr.hit td.pu{color:#E01E6D;font-weight:700}
+.card{position:absolute;left:1190px;top:250px;width:600px;border-radius:26px;padding:34px 38px;background:rgba(14,30,78,.78);border:1px solid rgba(143,227,255,.35);box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 60px rgba(61,184,255,.18),inset 0 1px 0 rgba(255,255,255,.12);color:#EAF0FF}
+.badge{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:22px;color:#BFF0FF}
+.row{display:flex;justify-content:space-between;font-size:24px;padding:12px 0;border-bottom:1px solid rgba(143,227,255,.15)}
+.row span:last-child{font-family:JBM}
+.btn{margin-top:26px;display:inline-flex;align-items:center;gap:12px;padding:16px 24px;border-radius:14px;background:#3DB8FF;color:#04203A;font-weight:800;font-size:21px}
+</style>
+<div class="stage">
+  <canvas id="bg" width="1920" height="1080" class="fill"></canvas>
+  <div id="docs"></div>
+  <canvas id="fx" width="1920" height="1080" class="fill" style="pointer-events:none"></canvas>
+  <div id="lensWrap" class="fill" style="overflow:hidden"></div>
+  <div id="ring" class="abs"></div>
+
+  <div class="card">
+    <div class="badge"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#8FE3FF"/></svg>Coopeo AI · écart détecté</div>
+    <div style="font-size:20px;color:#A9B4D6;margin-top:16px">Crèmerie B · facture n° 4812 · ligne 14</div>
+    <div style="font-weight:800;font-size:34px;margin:6px 0 14px">Beurre AOP 82 %</div>
+    <div class="row"><span style="color:#A9B4D6">Prix facturé</span><span style="color:#FF7BB0;font-weight:600">8,40 €/kg</span></div>
+    <div class="row"><span style="color:#A9B4D6">Prix négocié</span><span>7,90 €/kg</span></div>
+    <div class="row" style="border:none"><span style="color:#A9B4D6">Quantité</span><span>25 kg</span></div>
+    <div style="display:flex;align-items:baseline;gap:16px;margin-top:18px"><span style="font-weight:800;font-size:76px;letter-spacing:-.03em;color:#fff;text-shadow:0 0 30px rgba(61,184,255,.6)">+12,50 €</span><span style="color:#A9B4D6;font-size:21px">à récupérer</span></div>
+    <div class="btn">Signaler au fournisseur →</div>
+  </div>
+  <div class="abs" style="left:1190px;top:910px;width:600px;font-weight:700;font-size:52px;letter-spacing:-.015em">Le moindre détail.</div>
+  <div class="vignette"></div>
+
+  <script>
+  const LINES=[['Lait entier','12','L','0,92','11,04'],['Lait demi-écrémé','6','L','0,88','5,28'],['Crème 35 %','10','L','3,98','39,80'],['Crème 30 %','5','L','3,62','18,10'],['Mascarpone','2','kg','6,40','12,80'],['Fromage blanc 20 %','5','kg','2,95','14,75'],['Œufs plein air','360','u','0,19','68,40'],['Beurre doux 82 %','25','kg','7,10','177,50'],['Beurre demi-sel','10','kg','7,30','73,00'],['Crème fraîche épaisse','5','L','4,10','20,50'],['Lait concentré','12','u','1,85','22,20'],['Yaourt nature','48','u','0,32','15,36'],['Beurre de tourage 82 %','20','kg','8,95','179,00'],['Beurre AOP 82 %','25','kg','8,40','210,00'],['Crème UHT 35 %','12','L','3,75','45,00'],['Lait ribot','6','L','1,10','6,60']];
+  function invoice(cls,ticks){
+    const rows=LINES.map((l,i)=>`<tr class="${i===13?'hit':''}" style="position:relative"><td class="no">${String(i+1).padStart(2,'0')}</td><td>${l[0]}</td><td class="n">${l[1]}</td><td>${l[2]}</td><td class="n pu">${l[3]} €</td><td class="n">${l[4]} €</td></tr>`).join('');
+    return `<div class="inv ${cls}" id="${cls}">
+      <div class="ih"><div style="width:52%"><div class="sn">Crèmerie B</div><div class="ad" style="width:80%"></div><div class="ad" style="width:55%"></div></div>
+      <div class="ft"><b>FACTURE</b>N° 4812<br>12/10/2026<br>Client : Boulangerie du Port</div></div>
+      <table><tr class="th"><td>N°</td><td>Désignation</td><td class="n">Qté</td><td>Unité</td><td class="n">P.U. HT</td><td class="n">Montant HT</td></tr>${rows}</table>
+      <div class="tot"><div><span>Total HT</span><b>919,33 €</b></div><div><span>TVA 5,5 %</span><b>50,56 €</b></div><div style="font-weight:800;font-size:18px"><span>Total TTC</span><b>969,89 €</b></div></div>
+    </div>`;
+  }
+  document.getElementById('docs').innerHTML=invoice('base');
+  // background
+  const b=document.getElementById('bg').getContext('2d');
+  let g=b.createRadialGradient(700,520,0,700,520,1300); g.addColorStop(0,'#14306F');g.addColorStop(.45,'#0A1844');g.addColorStop(1,'#030714');
+  b.fillStyle=g;b.fillRect(0,0,1920,1080);
+  const r=rng(51); for(let i=0;i<260;i++){b.globalAlpha=.35*r();b.fillStyle='#9FD8FF';b.beginPath();b.arc(r()*1920,r()*1080,r()*1.6,0,7);b.fill();}
+  b.globalAlpha=1;
+  // dim the base invoice with a cool tint
+  const base=document.getElementById('base');
+  base.insertAdjacentHTML('beforeend','<div style="position:absolute;inset:0;border-radius:6px;background:linear-gradient(180deg,rgba(10,30,90,.30),rgba(10,30,90,.42));pointer-events:none"></div>');
+  // locate line 14
+  const hit=base.querySelector('tr.hit').getBoundingClientRect();
+  const rowsEls=[...base.querySelectorAll('tr')].slice(1);
+  const pu=base.querySelector('tr.hit td.pu').getBoundingClientRect(); const cx=pu.left+pu.width*0.5-10, cy=hit.top+hit.height/2, R=215, Z=2.3;
+  // magnified copy
+  const W=document.getElementById('lensWrap');
+  W.style.clipPath=`circle(${R}px at ${cx}px ${cy}px)`;
+  W.innerHTML=`<div style="position:absolute;inset:0;transform-origin:${cx}px ${cy}px;transform:scale(${Z})">${invoice('mag')}</div><div class="fill" style="background:radial-gradient(circle ${R}px at ${cx}px ${cy}px,rgba(61,184,255,0) 70%,rgba(61,184,255,.28) 100%)"></div>`;
+  // lens ring
+  const ring=document.getElementById('ring');
+  ring.style.cssText=`left:${cx-R}px;top:${cy-R}px;width:${2*R}px;height:${2*R}px;border-radius:50%;border:7px solid #3DB8FF;box-shadow:0 0 0 2px rgba(191,240,255,.8) inset,0 0 40px 8px rgba(61,184,255,.65),0 0 120px 30px rgba(61,184,255,.25);`;
+  ring.insertAdjacentHTML('beforeend',`<div style="position:absolute;left:18%;top:9%;width:34%;height:14%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0));transform:rotate(-24deg);filter:blur(2px)"></div>`);
+  // scan trail + ticks on scanned lines
+  const f=document.getElementById('fx').getContext('2d');
+  f.globalCompositeOperation='lighter';
+  rowsEls.slice(0,13).forEach((tr,i)=>{const q=tr.getBoundingClientRect();
+    const lg=f.createLinearGradient(q.left,0,q.right,0);lg.addColorStop(0,'rgba(61,184,255,0)');lg.addColorStop(.5,`rgba(61,184,255,${.05+i*.012})`);lg.addColorStop(1,'rgba(61,184,255,0)');
+    f.fillStyle=lg;f.fillRect(q.left,q.top,q.width,q.height);
+    f.font='800 18px Manrope';f.fillStyle='#3DB8FF';f.shadowColor='#3DB8FF';f.shadowBlur=8;f.fillText('✓',q.right+16,q.top+q.height*0.72);f.shadowBlur=0;});
+  // beam sweeping down to the lens
+  const topR=rowsEls[0].getBoundingClientRect();
+  const bg2=f.createLinearGradient(0,topR.top,0,cy);bg2.addColorStop(0,'rgba(61,184,255,0)');bg2.addColorStop(1,'rgba(61,184,255,.35)');
+  f.fillStyle=bg2;f.filter='blur(20px)';f.fillRect(cx-R*0.8,topR.top,R*1.6,cy-topR.top);f.filter='none';
+  // connector lens -> card
+  f.strokeStyle='#3DB8FF';f.lineWidth=3;f.shadowColor='#3DB8FF';f.shadowBlur=16;f.setLineDash([2,10]);f.lineCap='round';
+  f.beginPath();f.moveTo(cx+R+6,cy);f.bezierCurveTo(cx+R+120,cy,1100,420,1190,420);f.stroke();
+  f.setLineDash([]);f.fillStyle='#BFF0FF';f.beginPath();f.arc(1190,420,6,0,7);f.fill();
+  </script>
+  <script>document.write(grain(51));</script>
+</div>

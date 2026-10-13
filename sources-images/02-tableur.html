@@ -1,0 +1,60 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="lib.js"></script>
+<style>
+.bg{background:radial-gradient(ellipse 1400px 900px at 40% 40%,#2a1c0e 0%,#0c0805 70%)}
+.screenWrap{left:150px;top:40px;width:1640px;height:900px;transform:perspective(2600px) rotateY(-7deg) rotateX(3deg);transform-origin:50% 50%}
+.bezel{position:absolute;inset:0;background:#121214;border-radius:26px;padding:34px 34px 46px;box-shadow:0 0 0 3px #26262a,0 40px 120px rgba(0,0,0,.8)}
+.disp{position:relative;width:100%;height:100%;background:#F2F5F7;overflow:hidden;border-radius:3px;box-shadow:0 0 90px 4px rgba(190,215,255,.10)}
+.chrome{height:46px;background:linear-gradient(#e4e8ec,#d3d9de);display:flex;align-items:center;gap:12px;padding:0 18px;font-size:19px;color:#3c4650;border-bottom:1px solid #b9c2ca}
+.dotw{width:13px;height:13px;border-radius:50%}
+.menu{height:36px;background:#eceff2;display:flex;gap:30px;align-items:center;padding:0 20px;font-size:17px;color:#46505a;border-bottom:1px solid #c9d1d8}
+.tools{height:44px;background:#f4f6f8;display:flex;gap:10px;align-items:center;padding:0 16px;border-bottom:1px solid #c9d1d8}
+.tools i{width:26px;height:22px;border-radius:4px;background:#d5dbe1}
+.fx{height:42px;background:#fff;display:flex;align-items:center;border-bottom:1px solid #c0c8cf;font-family:"JBM";font-size:19px;color:#2b333b}
+.fx span{padding:0 16px;border-right:1px solid #c9d1d8;height:100%;display:flex;align-items:center}
+table{border-collapse:collapse;font-size:22px;color:#1f262d;width:100%;table-layout:fixed}
+td{height:46px;border-right:1px solid #cdd4da;border-bottom:1px solid #cdd4da;padding:0 12px;white-space:nowrap;overflow:hidden;font-family:"Manrope";font-weight:500}
+td.n{text-align:right;font-family:"JBM";font-size:20px}
+tr.h td{background:#e3e8ed;color:#59636d;text-align:center;font-weight:600;font-size:18px;height:34px}
+td.r{background:#e3e8ed;color:#59636d;text-align:center;font-size:17px;width:56px;font-weight:600}
+.cur{display:inline-block;width:3px;height:26px;background:#111;vertical-align:-5px;margin-left:2px}
+</style>
+<div class="stage">
+  <div class="fill bg"></div>
+  <div class="abs screenWrap">
+    <div class="bezel"><div class="disp">
+      <div class="chrome"><span class="dotw" style="background:#e4675b"></span><span class="dotw" style="background:#e9b54c"></span><span class="dotw" style="background:#6bbf5a"></span><span style="margin-left:18px;font-weight:600">factures_fournisseurs_v3_FINAL.xls</span></div>
+      <div class="menu"><span>Fichier</span><span>Édition</span><span>Affichage</span><span>Insertion</span><span>Format</span><span>Outils</span><span>Données</span><span>Fenêtre</span></div>
+      <div class="tools"><i></i><i></i><i></i><i style="width:2px;background:#bbb"></i><i></i><i></i><i style="width:60px"></i><i style="width:40px"></i><i></i><i></i><i></i></div>
+      <div class="fx"><span style="width:110px;justify-content:center">F7</span><span style="color:#8a949e;font-style:italic">fx</span><span style="border:none">4,1</span></div>
+      <table>
+        <colgroup><col style="width:56px"><col style="width:130px"><col style="width:230px"><col style="width:310px"><col style="width:100px"><col style="width:100px"><col style="width:170px"><col style="width:170px"><col></colgroup>
+        <tr class="h"><td></td><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td></tr>
+        <tr><td class="r">1</td><td colspan="4" style="font-weight:800;font-size:24px">FACTURES FOURNISSEURS · MARS</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="r">2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr style="background:#fff7df"><td class="r">3</td><td style="font-weight:700">Date</td><td style="font-weight:700">Fournisseur</td><td style="font-weight:700">Article</td><td style="font-weight:700">Qté</td><td style="font-weight:700">Unité</td><td style="font-weight:700;text-align:right">Prix unit.</td><td style="font-weight:700;text-align:right">Total</td><td></td></tr>
+        <tr><td class="r">4</td><td class="n" style="text-align:left">02/03</td><td>Minoterie A</td><td>Farine T65</td><td class="n">25</td><td>kg</td><td class="n">0,71 €</td><td class="n">17,75 €</td><td></td></tr>
+        <tr><td class="r">5</td><td class="n" style="text-align:left">02/03</td><td>Minoterie A</td><td>Farine T45</td><td class="n">25</td><td>kg</td><td class="n">0,84 €</td><td class="n">21,00 €</td><td></td></tr>
+        <tr><td class="r">6</td><td class="n" style="text-align:left">04/03</td><td>Crèmerie B</td><td>Crème 35 %</td><td class="n">6</td><td>L</td><td class="n">3,98 €</td><td class="n">23,88 €</td><td></td></tr>
+        <tr><td class="r" style="background:#c9d6cc;color:#2d5a3a">7</td><td class="n" style="text-align:left">04/03</td><td>Crèmerie B</td><td>Beurre doux 82 %</td><td class="n">25</td><td>kg</td><td class="n" style="background:#fff;outline:3px solid #2d6a3e;outline-offset:-2px">4,1<span class="cur"></span></td><td class="n"></td><td></td></tr>
+        <tr><td class="r">8</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="r">9</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="r">10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="r">11</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="r">12</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="r">13</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      </table>
+      <!-- lamp reflection -->
+      <div class="fill" style="background:linear-gradient(115deg,rgba(255,190,110,.20) 0%,rgba(255,190,110,.06) 22%,transparent 40%),linear-gradient(200deg,rgba(255,255,255,.04),transparent 25%)"></div>
+    </div></div>
+  </div>
+  <!-- foreground blurred invoice -->
+  <div class="abs" style="left:-120px;top:760px;width:640px;height:520px;background:#EFE3CB;transform:rotate(-12deg);filter:blur(10px) brightness(.5);box-shadow:0 0 60px rgba(0,0,0,.6);padding:50px">
+    <div style="font-weight:800;font-size:40px;color:#5a4a33">FACTURE</div>
+    <div style="height:10px;background:#a99a7e;margin:24px 0;width:70%"></div><div style="height:10px;background:#a99a7e;margin:24px 0"></div><div style="height:10px;background:#a99a7e;margin:24px 0;width:80%"></div>
+  </div>
+  <div class="fill" style="background:radial-gradient(ellipse 900px 600px at 0% 100%,rgba(255,170,80,.18),transparent 70%);mix-blend-mode:screen"></div>
+  <div class="abs" style="left:0;right:0;bottom:0;height:300px;background:linear-gradient(transparent,rgba(0,0,0,.75));z-index:39"></div>
+  <div class="caption" style="color:#FFE9C9;font-size:48px;bottom:70px">Des factures papier. Tout à la main.</div>
+  <div class="vignette"></div>
+  <script>document.write(grain(5));</script>
+</div>

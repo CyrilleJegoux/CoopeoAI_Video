@@ -1,0 +1,51 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="lib.js"></script><script src="paper.js"></script>
+<script>document.write('<style>'+PAPER_CSS+'</style>')</script>
+<style>
+.wood{background:
+  repeating-linear-gradient(92deg,rgba(0,0,0,0) 0 38px,rgba(0,0,0,.10) 38px 40px,rgba(0,0,0,0) 40px 97px,rgba(255,220,170,.04) 97px 99px),
+  repeating-linear-gradient(91deg,rgba(0,0,0,0) 0 260px,rgba(0,0,0,.18) 260px 262px),
+  linear-gradient(180deg,#3a2614,#2a1a0c)}
+.light{background:radial-gradient(ellipse 1000px 760px at 52% 46%,rgba(255,196,120,.30),rgba(255,160,80,.08) 50%,transparent 75%);mix-blend-mode:screen}
+.shade{background:radial-gradient(ellipse 1150px 820px at 52% 46%,transparent 40%,rgba(0,0,0,.72) 100%)}
+.binder{position:absolute;left:650px;top:100px;width:620px;height:770px;transform:rotate(-5deg)}
+.cover{position:absolute;inset:0;border-radius:10px 14px 14px 10px;background:
+  radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.10),transparent 60%),
+  repeating-linear-gradient(35deg,rgba(255,255,255,.025) 0 3px,rgba(0,0,0,.03) 3px 6px),
+  linear-gradient(135deg,#2d4f7a,#1f3a5c);box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 0 0 2px rgba(0,0,0,.25)}
+.spine{position:absolute;left:0;top:0;bottom:0;width:70px;border-radius:10px 0 0 10px;background:linear-gradient(90deg,#16293f,#203a59 70%,#1a3150);box-shadow:inset -3px 0 6px rgba(0,0,0,.35)}
+.ring{position:absolute;left:24px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e9edf2,#8d96a3);box-shadow:0 2px 3px rgba(0,0,0,.5)}
+.label{position:absolute;left:170px;top:110px;width:330px;height:150px;background:#F3EEE4;border-radius:4px;box-shadow:inset 0 0 0 6px #d9d2c4,0 2px 4px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-family:Caveat;font-weight:700;font-size:74px;color:#1d2a52;transform:rotate(-1deg)}
+.finger{position:absolute;right:46px;top:340px;width:56px;height:120px;border-radius:30px;background:#14263c;box-shadow:inset 0 3px 8px rgba(0,0,0,.6)}
+</style>
+<div class="stage">
+  <div class="fill wood"></div>
+  <!-- papers sticking out from under the binder (drawn first) -->
+  <div id="under"></div>
+  <div class="binder">
+    <div class="cover"></div><div class="spine"></div>
+    <div class="ring" style="top:180px"></div><div class="ring" style="top:600px"></div>
+    <div class="label">Factures</div>
+    <div class="finger"></div>
+  </div>
+  <div id="loose"></div>
+  <div class="fill light"></div>
+  <div class="fill shade"></div>
+  <div class="abs" style="left:0;right:0;bottom:0;height:300px;background:linear-gradient(transparent,rgba(0,0,0,.8) 75%);z-index:39"></div><div class="caption" style="color:#FFE9C9;text-shadow:0 2px 30px rgba(0,0,0,.9);bottom:80px">Il y a 10 ans.</div>
+  <div class="vignette"></div>
+  <script>
+    const U=document.getElementById('under');
+    const place=(el,html,x,y,rot,extra='')=>{el.insertAdjacentHTML('beforeend',`<div style="position:absolute;left:${x}px;top:${y}px;transform:rotate(${rot}deg);${extra}">${html}</div>`)};
+    // pages poking out of the binder edges
+    place(U,invoiceHTML(1,{w:520}),900,190,4);
+    place(U,invoiceHTML(0,{w:520,tone:'#F7F2E8'}),890,420,-9);
+    place(U,invoiceHTML(4,{w:520,tone:'#EFE8D8'}),860,620,11);
+    place(U,invoiceHTML(3,{w:500,tone:'#FBE3EA'}),760,700,-3);
+    const L=document.getElementById('loose');
+    place(L,invoiceHTML(2,{w:440,h:600,stamp:true}),170,300,-16);
+    place(L,invoiceHTML(1,{w:440,h:600,hl:0,note:'vérifier prix !'}),1390,470,13);
+    place(L,'<div class="postit">à saisir<br>avant<br>vendredi</div>',1420,190,8);
+    // coffee ring
+    L.insertAdjacentHTML('beforeend','<div style="position:absolute;left:120px;top:800px;width:150px;height:150px;border-radius:50%;border:6px solid rgba(60,32,12,.45);filter:blur(1.5px)"></div>');
+  </script>
+  <script>document.write(grain(31));</script>
+</div>

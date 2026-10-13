@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="lib.js"></script>
+<style>
+.card{position:absolute;background:rgba(246,248,255,.96);color:#0B1430;border-radius:20px;padding:18px 24px;box-shadow:0 30px 70px rgba(0,0,0,.55);font-size:24px;display:flex;align-items:center;gap:14px;white-space:nowrap}
+.card b{font-weight:800}.card .d{width:30px;height:30px;border-radius:9px}
+.card .v{font-family:"JBM";font-size:22px;color:#4A5578}
+</style>
+<div class="stage">
+  <canvas id="c" width="1920" height="1080" class="fill"></canvas>
+  <div class="card" style="left:150px;top:170px"><span class="d" style="background:#F48C03"></span><b>Achats</b><span class="v">5 700 L</span></div>
+  <div class="card" style="left:1440px;top:150px"><span class="d" style="background:#E01E6D"></span><b>Marges</b><span class="v">+3,2 pts</span></div>
+  <div class="card" style="left:110px;top:560px;transform:scale(.85);filter:blur(2px);opacity:.85"><span class="d" style="background:#E01E6D"></span><b>Recettes</b><span class="v">0,37 €</span></div>
+  <div class="card" style="left:1500px;top:520px;transform:scale(.8);filter:blur(2.5px);opacity:.8"><span class="d" style="background:#0CBF88"></span><b>Inventaires</b></div>
+  <div class="card" style="left:260px;top:840px"><span class="d" style="background:#F48C03"></span><b>Commandes</b><span class="v">lait</span></div>
+  <div class="card" style="left:1380px;top:830px"><span class="d" style="background:#129BE0"></span><b>Ventes</b><span class="v">écarts</span></div>
+  <div class="card" style="left:830px;top:60px;transform:scale(.7);filter:blur(4px);opacity:.7"><span class="d" style="background:#0CBF88"></span><b>Production</b></div>
+  <div class="caption" style="bottom:56px;font-size:50px;text-shadow:0 4px 30px rgba(0,0,0,.9)">Et si tout se connectait ?</div>
+  <div class="vignette"></div>
+  <script>window.MODE=1;window.ANCHORS=[[330,200,'#F48C03'],[1560,180,'#E01E6D'],[250,590,'#E01E6D'],[1600,550,'#0CBF88'],[420,870,'#F48C03'],[1500,860,'#129BE0'],[960,90,'#0CBF88']];</script>
+  <script src="ten.js"></script>
+  <script>document.write(grain(12));</script>
+</div>
