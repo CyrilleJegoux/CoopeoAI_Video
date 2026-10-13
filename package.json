@@ -1,0 +1,27 @@
+{
+  "name": "coopeo-ai-film",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Film de lancement Coopeo AI (Remotion)",
+  "scripts": {
+    "studio": "remotion studio",
+    "audio": "tsx scripts/generate-audio.ts",
+    "render": "remotion render Master out/master_hq.mp4 --crf 16",
+    "render:cutdown": "remotion render Cutdown30 out/cutdown_hq.mp4 --crf 16",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/caveat": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@remotion/cli": "^4.0.535",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.535"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
