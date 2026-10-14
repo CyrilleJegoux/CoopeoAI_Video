@@ -9,47 +9,75 @@ import { Finish, FrameCanvas, Stage } from "../lib/Stage";
 const COLS = [colors.pink, colors.orange, colors.green, colors.blue];
 const DUR = f(8);
 
-const drawCalm = (ctx: CanvasRenderingContext2D, frame: number) => {
-  const g0 = ctx.createRadialGradient(960, 540, 0, 960, 540, 1150);
+// Fond calme (boom.js MODE 4) : couches pré-calculées une fois, puis simplement recopiées à chaque image
+let CALM_BG: HTMLCanvasElement | null = null;
+let CALM_ARCS: HTMLCanvasElement | null = null;
+const PAD = 300;
+const calmLayers = () => {
+  if (CALM_BG && CALM_ARCS) return [CALM_BG, CALM_ARCS] as const;
+  const bg = document.createElement("canvas");
+  bg.width = 1920;
+  bg.height = 1080;
+  const b = bg.getContext("2d")!;
+  const g0 = b.createRadialGradient(960, 540, 0, 960, 540, 1150);
   g0.addColorStop(0, "#12307A");
   g0.addColorStop(0.35, "#0A1A4A");
   g0.addColorStop(0.75, "#050C26");
   g0.addColorStop(1, "#02050F");
-  ctx.fillStyle = g0;
-  ctx.fillRect(0, 0, 1920, 1080);
-  ctx.globalCompositeOperation = "lighter";
+  b.fillStyle = g0;
+  b.fillRect(0, 0, 1920, 1080);
+  b.globalCompositeOperation = "lighter";
   const r = rng(35);
-  ctx.fillStyle = "#9FD8FF";
+  b.fillStyle = "#9FD8FF";
   for (let i = 0; i < 300; i++) {
-    ctx.globalAlpha = 0.35 * r() * (0.7 + 0.3 * Math.sin(frame * 0.05 + i));
-    ctx.beginPath();
-    ctx.arc(r() * 1920, r() * 1080, r() * 1.7, 0, 7);
-    ctx.fill();
+    b.globalAlpha = 0.35 * r();
+    b.beginPath();
+    b.arc(r() * 1920, r() * 1080, r() * 1.7, 0, 7);
+    b.fill();
   }
-  // arcs discrets aux 4 couleurs, qui glissent doucement
-  const appear = prog(frame, 0, 30, ease.out);
-  const d = (1 - appear) * 140 - frame * 0.15;
-  const arc = (x: number, y: number, rad: number, c: string, a: number, w: number) => {
-    ctx.save();
-    ctx.filter = "blur(1.5px)";
-    ctx.globalAlpha = a * appear;
-    ctx.strokeStyle = c;
-    ctx.lineWidth = w;
-    ctx.beginPath();
-    ctx.arc(x, y, rad, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.restore();
-  };
-  arc(-260 - d, 1240 + d, 760, COLS[1], 0.22, 3);
-  arc(-200 - d, 1300 + d, 880, COLS[0], 0.14, 2);
-  arc(2200 + d, -260 - d, 780, COLS[3], 0.22, 3);
-  arc(2140 + d, -320 - d, 900, COLS[2], 0.14, 2);
-  const g = ctx.createRadialGradient(960, 470, 0, 960, 470, 760);
+  const g = b.createRadialGradient(960, 470, 0, 960, 470, 760);
   g.addColorStop(0, "rgba(61,140,255,.30)");
   g.addColorStop(1, "rgba(61,140,255,0)");
+  b.globalAlpha = 1;
+  b.fillStyle = g;
+  b.fillRect(0, 0, 1920, 1080);
+  const ac = document.createElement("canvas");
+  ac.width = 1920 + 2 * PAD;
+  ac.height = 1080 + 2 * PAD;
+  const a = ac.getContext("2d")!;
+  a.translate(PAD, PAD);
+  const arc = (x: number, y: number, rad: number, c: string, al: number, w: number) => {
+    a.save();
+    a.filter = "blur(1.5px)";
+    a.globalAlpha = al;
+    a.strokeStyle = c;
+    a.lineWidth = w;
+    a.beginPath();
+    a.arc(x, y, rad, 0, Math.PI * 2);
+    a.stroke();
+    a.restore();
+  };
+  arc(-260, 1240, 760, COLS[1], 0.22, 3);
+  arc(-200, 1300, 880, COLS[0], 0.14, 2);
+  arc(2200, -260, 780, COLS[3], 0.22, 3);
+  arc(2140, -320, 900, COLS[2], 0.14, 2);
+  CALM_BG = bg;
+  CALM_ARCS = ac;
+  return [bg, ac] as const;
+};
+
+const drawCalm = (ctx: CanvasRenderingContext2D, frame: number) => {
+  const [bg, arcs] = calmLayers();
+  ctx.drawImage(bg, 0, 0);
+  // arcs discrets aux 4 couleurs, qui glissent doucement (les arcs bas-gauche et haut-droite s'écartent symétriquement)
+  const appear = prog(frame, 0, 30, ease.out);
+  const d = (1 - appear) * 140 - frame * 0.15;
+  ctx.globalCompositeOperation = "lighter";
+  ctx.globalAlpha = appear;
+  // moitié gauche (arcs bas-gauche) décalée de (-d, +d), moitié droite (haut-droite) de (+d, -d)
+  ctx.drawImage(arcs, 0, 0, PAD + 960, arcs.height, -PAD - d, -PAD + d, PAD + 960, arcs.height);
+  ctx.drawImage(arcs, PAD + 960, 0, PAD + 960, arcs.height, 960 + d, -PAD - d, PAD + 960, arcs.height);
   ctx.globalAlpha = 1;
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 1920, 1080);
   ctx.globalCompositeOperation = "source-over";
 };
 

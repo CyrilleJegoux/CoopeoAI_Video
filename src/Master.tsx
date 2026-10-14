@@ -1,6 +1,6 @@
 import React from "react";
-import { AbsoluteFill, Sequence } from "remotion";
-import { f, timeline } from "./config";
+import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
+import { audio, f, timeline } from "./config";
 import { Acte01 } from "./acts/Acte01";
 import { Acte02 } from "./acts/Acte02";
 import { Acte03 } from "./acts/Acte03";
@@ -28,8 +28,18 @@ export const ACTES: Act[] = [
   { key: "acte10", C: Acte10, name: "X · Merci" },
 ];
 
-export const Master: React.FC = () => (
+/** fenetre : [début, fin] en images du master — fondu de 3 images aux bords (utilisé par le cutdown) */
+export const Master: React.FC<{ son?: boolean; fenetre?: [number, number] }> = ({ son = true, fenetre }) => (
   <AbsoluteFill style={{ background: "#000" }}>
+    {son
+      ? audio.pistes.map((p) => (
+          <Audio
+            key={p.src}
+            src={staticFile(p.src)}
+            volume={(fr) => (fenetre ? p.volume * Math.max(0, Math.min(1, (fr - fenetre[0]) / 3, (fenetre[1] - fr) / 3)) : p.volume)}
+          />
+        ))
+      : null}
     {ACTES.map(({ key, C, name }) => {
       const t = timeline[key];
       return (

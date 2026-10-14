@@ -122,13 +122,16 @@ const drawScene = (ctx: CanvasRenderingContext2D, frame: number) => {
   ctx.globalCompositeOperation = "lighter";
   const weaveAlpha = conn > 0 ? lerp(0.2, 0.16, conn) : lerp(0.2, 0.07, m3);
   ctx.lineWidth = 1;
-  for (const s of WEAVE) {
-    if (s.i >= Math.max(limit, conn < 1 ? PTS.length : 0)) continue;
-    ctx.strokeStyle = colorAt(s.i);
-    ctx.globalAlpha = weaveAlpha;
+  ctx.globalAlpha = weaveAlpha;
+  const wl = Math.max(limit, conn < 1 ? PTS.length : 0);
+  for (const col of COLS) {
+    ctx.strokeStyle = col;
     ctx.beginPath();
-    ctx.moveTo(s.ax, s.ay);
-    ctx.lineTo(s.bx, s.by);
+    for (const s of WEAVE) {
+      if (s.i >= wl || colorAt(s.i) !== col) continue;
+      ctx.moveTo(s.ax, s.ay);
+      ctx.lineTo(s.bx, s.by);
+    }
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
@@ -166,21 +169,32 @@ const drawScene = (ctx: CanvasRenderingContext2D, frame: number) => {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     for (const [w, blur, a] of [
-      [44, 36, 0.1],
-      [22, 14, 0.5],
-      [6, 4, 0.85],
+      [70, 50, 0.22],
+      [44, 36, 0.3],
+      [26, 18, 0.85],
+      [8, 6, 1],
     ] as [number, number, number][]) {
       ctx.globalAlpha = a * conn;
       ctx.lineWidth = w;
       ctx.shadowBlur = blur;
-      for (let i = 1; i < limit; i++) {
-        if (Math.hypot(PTS[i][0] - PTS[i - 1][0], PTS[i][1] - PTS[i - 1][1]) > 40) continue;
-        const col = colorAt(i);
-        ctx.strokeStyle = w === 6 ? "#FFFFFF" : col;
+      // un seul tracé par couleur (au lieu d'un segment à la fois)
+      for (const col of COLS) {
+        ctx.strokeStyle = w === 8 ? "#FFFFFF" : col;
         ctx.shadowColor = col;
         ctx.beginPath();
-        ctx.moveTo(PTS[i - 1][0], PTS[i - 1][1]);
-        ctx.lineTo(PTS[i][0], PTS[i][1]);
+        let open = false;
+        for (let i = 1; i < limit; i++) {
+          const jump = Math.hypot(PTS[i][0] - PTS[i - 1][0], PTS[i][1] - PTS[i - 1][1]) > 40;
+          if (jump || colorAt(i) !== col) {
+            open = false;
+            continue;
+          }
+          if (!open) {
+            ctx.moveTo(PTS[i - 1][0], PTS[i - 1][1]);
+            open = true;
+          }
+          ctx.lineTo(PTS[i][0], PTS[i][1]);
+        }
         ctx.stroke();
       }
     }

@@ -108,6 +108,8 @@ export const acte1 = {
       ["04/03", "Crèmerie B", "Beurre doux 82 %", "25", "kg", "", ""],
     ],
     saisie: "4,12", // tapé caractère par caractère dans F7
+    // instants des frappes (s, relatifs au début du plan « saisie ») : d'abord irréguliers, puis calés sur la grille
+    frappes: { cles: [0.4, 0.9, 1.37, 2.27], entree: 2.5, ligneSuivante: [3.0, 3.27, 3.5, 3.77] },
   },
   envol: {
     fragments: [
@@ -605,4 +607,47 @@ export const acte10 = {
   ] as [number, number][],
   allumageA: 0.35, // premier prénom
   pas: 0.07, // un prénom toutes les ~2 images
+};
+
+// ---------------------------------------------------------------- Son
+// Pistes jouées par le master. Par défaut : le mixage final généré par `npm run audio`.
+// Pour utiliser un morceau sous licence : remplacer par
+//   [{ src: "audio/morceau-licence.mp3", volume: 0.8 }, { src: "audio/sfx.wav", volume: 1 }]
+// (tout le film est calé sur la grille 120 BPM, premier kick à 0:12).
+export const audio = {
+  pistes: [{ src: "audio/mix.wav", volume: 1 }],
+};
+
+// ---------------------------------------------------------------- Cutdown 30 s
+// Extraits du master [début (s), durée (s)], tous calés sur la grille 120 BPM (multiples de 0,5 s)
+export const cutdown30 = {
+  extraits: [
+    [13.0, 2.0], // 0:00 → 0:02 logo, « Coopeo évolue. »
+    [18.5, 1.5], // 0:02 → 0:10 déferlement accéléré : factures,
+    [22.0, 1.5], //   croissant,
+    [25.5, 1.5], //   77 €,
+    [31.5, 1.5], //   planning,
+    [34.5, 2.0], //   marges
+    [54.0, 2.0], // 0:10 → 0:15 connexions → « 10 »,
+    [58.0, 1.5], //   bougies,
+    [60.5, 1.5], //   souffle
+    [62.0, 3.0], // 0:15 → 0:18 BOOM, Coopeo AI
+    [72.5, 3.0], // 0:18 → 0:24 loupe (8,40 €),
+    [87.5, 3.0], //   puis 26,49 € (coût réel whisky)
+    [120.0, 3.0], // 0:24 → 0:27 cercle vertueux (bref)
+    [124.5, 3.0], // 0:27 → 0:30 signature
+  ] as [number, number][],
+};
+
+// ---------------------------------------------------------------- Fin alternative (FinDashboard)
+export const finDashboard = {
+  duree: 6,
+  titre: "Tableau de bord",
+  menu: ["Accueil", "Achats", "Recettes", "Stocks", "Ventes", "Équipe"],
+  kpis: [
+    { titre: "Achats analysés", valeur: "5 700 L", couleur: colors.orange },
+    { titre: "Marge", valeur: "+3,2 pts", couleur: colors.pink },
+    { titre: "Alertes du jour", valeur: "4", couleur: colors.blue },
+    { titre: "À récupérer", valeur: "89,50 €", couleur: colors.green }, // 77 € + 12,50 €
+  ],
 };

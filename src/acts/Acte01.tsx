@@ -43,29 +43,43 @@ const Placed: React.FC<{ x: number; y: number; rot: number; html: string; style?
   style,
 }) => <Html html={html} style={{ position: "absolute", left: x, top: y, transform: `rotate(${rot}deg)`, ...style }} />;
 
+/** Particule lumineuse pré-dessinée (évite un shadowBlur par particule, très coûteux) */
+let DUST_SPRITE: HTMLCanvasElement | null = null;
+const dustSprite = () => {
+  if (DUST_SPRITE) return DUST_SPRITE;
+  const c = document.createElement("canvas");
+  c.width = c.height = 32;
+  const x = c.getContext("2d")!;
+  const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+  g.addColorStop(0, "rgba(255,233,200,1)");
+  g.addColorStop(0.25, "rgba(255,217,160,.75)");
+  g.addColorStop(1, "rgba(255,201,122,0)");
+  x.fillStyle = g;
+  x.fillRect(0, 0, 32, 32);
+  DUST_SPRITE = c;
+  return c;
+};
+
 /** Poussière dans la lumière de la lampe */
 const Dust: React.FC<{ count?: number; alpha?: number }> = ({ count = 90, alpha = 1 }) => (
   <FrameCanvas
     style={{ mixBlendMode: "screen" }}
     draw={(ctx, frame) => {
       const r = rng(77);
+      const sp = dustSprite();
       ctx.globalCompositeOperation = "lighter";
       for (let i = 0; i < count; i++) {
         const x0 = 500 + r() * 1000,
           y0 = 150 + r() * 750,
-          sp = 0.2 + r() * 0.6,
+          v = 0.2 + r() * 0.6,
           ph = r() * 6.28,
           s = 0.6 + r() * 2.2;
-        const x = x0 + Math.sin(frame * 0.02 * sp + ph) * 30 + frame * 0.25 * sp;
-        const y = y0 - frame * 0.35 * sp + Math.cos(frame * 0.03 + ph) * 12;
+        const x = x0 + Math.sin(frame * 0.02 * v + ph) * 30 + frame * 0.25 * v;
+        const y = y0 - frame * 0.35 * v + Math.cos(frame * 0.03 + ph) * 12;
         const tw = 0.4 + 0.6 * Math.abs(Math.sin(frame * 0.05 + ph));
         ctx.globalAlpha = alpha * tw * (0.25 + r() * 0.45);
-        ctx.fillStyle = "#FFD9A0";
-        ctx.shadowColor = "#FFC97A";
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.arc(x, y, s, 0, 7);
-        ctx.fill();
+        const d = s * 6;
+        ctx.drawImage(sp, x - d / 2, y - d / 2, d, d);
       }
     }}
   />
@@ -325,14 +339,10 @@ const SHEET_CSS = `
 `;
 
 // frappes clavier (images relatives au plan) : d'abord irrégulières, puis calées sur la grille
-const KEYS = [
-  { at: 12, txt: "4" },
-  { at: 27, txt: "4," },
-  { at: 41, txt: "4,1" },
-  { at: 68, txt: "4,12" },
-];
-const ENTER_AT = 75;
-const NEXT_ROW_KEYS = [90, 98, 105, 113]; // A8 : « 05/03 » au rythme
+const FR = acte1.tableur.frappes;
+const KEYS = FR.cles.map((t, i) => ({ at: f(t), txt: acte1.tableur.saisie.slice(0, [1, 2, 3, 4][i]) }));
+const ENTER_AT = f(FR.entree);
+const NEXT_ROW_KEYS = FR.ligneSuivante.map((t) => f(t)); // A8 : « 05/03 » au rythme
 
 const Spreadsheet: React.FC<{ frame: number; liftCells?: boolean }> = ({ frame, liftCells }) => {
   const t = acte1.tableur;

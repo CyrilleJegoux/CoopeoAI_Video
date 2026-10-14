@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef } from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Img, staticFile, useCurrentFrame } from "remotion";
 import { AI_CSS, BASE_CSS, CARD_CSS, PAPER_CSS } from "./styles";
 
 const ALL_CSS = BASE_CSS + AI_CSS + PAPER_CSS + CARD_CSS;
@@ -15,20 +15,14 @@ export const Stage: React.FC<{ children: React.ReactNode; style?: React.CSSPrope
   </AbsoluteFill>
 );
 
-/** Grain léger (repris de grain() dans lib.js). La graine change toutes les 2 images. */
-export const Grain: React.FC<{ opacity?: number; freq?: number }> = ({ opacity = 0.1, freq = 0.85 }) => {
+/**
+ * Grain léger (équivalent de grain() dans lib.js : bruit gris en mode « overlay »).
+ * Les textures sont pré-calculées (public/grain) pour un rendu rapide ; elles changent toutes les 2 images.
+ */
+export const Grain: React.FC<{ opacity?: number }> = ({ opacity = 0.1 }) => {
   const frame = useCurrentFrame();
-  const seed = 3 + (Math.floor(frame / 2) % 12);
-  const id = `grain${seed}`;
-  return (
-    <svg className="grain" width={1920} height={1080} style={{ opacity }}>
-      <filter id={id}>
-        <feTurbulence type="fractalNoise" baseFrequency={freq} numOctaves={2} seed={seed} stitchTiles="stitch" />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      <rect width="100%" height="100%" filter={`url(#${id})`} />
-    </svg>
-  );
+  const k = Math.floor(frame / 2) % 6;
+  return <Img className="grain" src={staticFile(`grain/grain_${k}.jpg`)} style={{ opacity, width: 1920, height: 1080 }} />;
 };
 
 export const Vignette: React.FC<{ strength?: number }> = ({ strength = 0.55 }) => (

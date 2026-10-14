@@ -6,8 +6,11 @@
   "scripts": {
     "studio": "remotion studio",
     "audio": "tsx scripts/generate-audio.ts",
-    "render": "remotion render Master out/master_hq.mp4 --crf 16",
-    "render:cutdown": "remotion render Cutdown30 out/cutdown_hq.mp4 --crf 16",
+    "render": "remotion render Master out/master_hq.mp4 --crf 16 --audio-codec aac --audio-bitrate 192k",
+    "encode": "bash scripts/encode.sh",
+    "cutdown": "tsx scripts/cutdown.ts",
+    "render:fin": "remotion render FinDashboard rendu/coopeo-ai-fin-dashboard.mp4 --crf 18 --muted",
+    "film": "npm run audio && npm run render && npm run encode && npm run cutdown",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -20,6 +23,7 @@
     "remotion": "^4.0.535"
   },
   "devDependencies": {
+    "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
