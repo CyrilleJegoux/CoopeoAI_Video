@@ -259,7 +259,8 @@ export function strokeTen(
   const draw = (col: string | CanvasGradient, w: number, blur: number) => {
     ctx.strokeStyle = col;
     ctx.lineWidth = w;
-    ctx.shadowColor = typeof col === "string" ? col : cols[1];
+    // comme dans lib.js : un dégradé n'est pas une couleur d'ombre valide → pas d'ombre colorée
+    ctx.shadowColor = typeof col === "string" ? col : "rgba(0,0,0,0)";
     ctx.shadowBlur = blur;
     ctx.beginPath();
     ctx.moveTo(a[0] + dx, a[1]);

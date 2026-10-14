@@ -276,3 +276,37 @@ export const acte4 = {
     pas: 0.5, // un avatar s'allume tous les temps
   },
 };
+
+// ---------------------------------------------------------------- Acte V · Convergence et 10 bougies
+export const acte5 = {
+  connexions: {
+    texte: "Et si tout se connectait ?",
+    texteA: 1.0,
+    // cartes qui gravitent puis se figent (positions finales de 04-dix)
+    cartes: [
+      { titre: "Achats", valeur: "5 700 L", couleur: colors.orange, x: 150, y: 170, flou: 0 },
+      { titre: "Marges", valeur: "+3,2 pts", couleur: colors.pink, x: 1440, y: 150, flou: 0 },
+      { titre: "Recettes", valeur: "0,37 €", couleur: colors.pink, x: 110, y: 560, flou: 2 },
+      { titre: "Inventaires", valeur: "", couleur: colors.green, x: 1500, y: 520, flou: 2.5 },
+      { titre: "Commandes", valeur: "lait", couleur: colors.orange, x: 260, y: 840, flou: 0 },
+      { titre: "Ventes", valeur: "écarts", couleur: colors.blue, x: 1380, y: 830, flou: 0 },
+      { titre: "Production", valeur: "", couleur: colors.green, x: 830, y: 60, flou: 4 },
+    ],
+    traceDebut: 1.0,
+    traceFin: 4.7,
+  },
+  bougies: {
+    start: 5,
+    // allumage : rose (haut), orange (gauche), vert (droite), bleu (bas), sur les temps
+    allumage: [5.5, 6.0, 6.5, 7.0],
+    texte: "10 ans.",
+    texteA: 7.0,
+  },
+  souffle: {
+    start: 8,
+    silence: 0.5, // inspiration
+    debut: 8.5,
+    // extinction par flamme [rose, orange, vert, bleu] : rose puis vert s'éteignent d'abord
+    extinction: [8.7, 9.05, 8.82, 9.2],
+  },
+};

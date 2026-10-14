@@ -9,7 +9,7 @@ export const prog = (
   from: number,
   to: number,
   easing: (t: number) => number = (t) => t,
-) => interpolate(frame, [from, to], [0, 1], { ...clamp, easing });
+) => (to <= from ? (frame >= from ? 1 : 0) : interpolate(frame, [from, to], [0, 1], { ...clamp, easing }));
 
 export const ease = {
   out: Easing.out(Easing.cubic),
