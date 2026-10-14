@@ -544,3 +544,24 @@ export const acte7 = {
     badge: "Connecté à vos outils · MCP",
   },
 };
+
+// ---------------------------------------------------------------- Acte VIII · Agir ensemble
+export const acte8 = {
+  chaine: ["Donnée", "Analyse", "Alerte", "Recommandation", "Action"],
+  tache: {
+    titre: "Relancer le fournisseur A",
+    contexte: "Erreur de facturation · Crème 35 % · 77 €",
+    partage: "Partagé avec l'équipe",
+    assigneA: "Assigné à",
+    assigne: 1, // index dans equipeClient (Nico)
+    statutAvant: "À traiter",
+    statut: "Résolution en cours",
+  },
+  // instants (s, relatifs à l'acte)
+  chaineA: 0.2,
+  pas: 0.35,
+  tacheA: 2.0,
+  partageA: 2.7,
+  assigneA: 3.5,
+  statutA: 4.2,
+};
