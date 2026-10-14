@@ -569,10 +569,6 @@ const CELLS = [
 const ENVOL_CSS = `
 .cell{position:absolute;background:#F2F5F7;border:1px solid #c9d1d8;font-size:30px;padding:12px 18px;color:#1f262d;white-space:nowrap;border-radius:2px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .cell.m{font-family:"JBM";font-size:28px}
-.card{position:absolute;background:rgba(246,248,255,.97);color:#0B1430;border-radius:28px;padding:30px 36px;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.6)}
-.card .k{display:flex;align-items:center;gap:14px;font-weight:700;font-size:28px;color:#26304f}
-.card .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center}
-.num{font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 `;
 
 export const IconBars: React.FC = () => (

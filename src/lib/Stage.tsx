@@ -1,8 +1,8 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { AI_CSS, BASE_CSS, PAPER_CSS } from "./styles";
+import { AI_CSS, BASE_CSS, CARD_CSS, PAPER_CSS } from "./styles";
 
-const ALL_CSS = BASE_CSS + AI_CSS + PAPER_CSS;
+const ALL_CSS = BASE_CSS + AI_CSS + PAPER_CSS + CARD_CSS;
 
 /** Scène 1920×1080 avec les feuilles de style communes */
 export const Stage: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({

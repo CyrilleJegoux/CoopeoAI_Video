@@ -51,3 +51,11 @@ export const PAPER_CSS = `
 .inv .legal{margin-top:46px}.inv .legal i{display:block;height:4px;background:#ddd3c0;border-radius:2px;margin-top:7px}
 .postit{position:absolute;width:150px;height:140px;background:linear-gradient(170deg,#FFE97A,#F7D84C);font-family:Caveat;font-weight:700;font-size:32px;color:#2a2a2a;padding:16px 14px;line-height:1;box-shadow:0 10px 20px rgba(0,0,0,.35)}
 `;
+
+// Cartes blanches Coopeo (reprises de sources-images/03-envol.html)
+export const CARD_CSS = `
+.card{position:absolute;background:rgba(246,248,255,.97);color:#0B1430;border-radius:28px;padding:30px 36px;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.6)}
+.card .k{display:flex;align-items:center;gap:14px;font-weight:700;font-size:28px;color:#26304f}
+.card .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.num{font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+`;

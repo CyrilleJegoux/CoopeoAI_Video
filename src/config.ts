@@ -149,3 +149,106 @@ export const acte2 = {
   texteA: 2.0,
   sortie: 5.5,
 };
+
+// ---------------------------------------------------------------- Acte III · Le déferlement
+// Instants en secondes relatifs au début de l'acte (0 = 0:18 dans le master)
+export const acte3 = {
+  analyse: {
+    at: 0,
+    titre: "Analyse des factures",
+    couleur: colors.orange,
+    chiffres: [
+      { valeur: 5700, unite: "L", legende: "de crème liquide" },
+      { valeur: 5, unite: "t", legende: "de beurre" },
+    ],
+    sousTitre: "achetés cette année",
+  },
+  fiche: {
+    at: 3,
+    titre: "Fiches techniques",
+    couleur: colors.pink,
+    phrase: "Mon croissant me coûte",
+    centimes: 37, // 0,37 €
+  },
+  mercuriales: {
+    at: 6,
+    titre: "Mercuriales",
+    couleur: colors.orange,
+    facture: {
+      entete: "Fournisseur A · facture 2026-0914",
+      lignes: [
+        { designation: "Beurre AOP 82 %", qte: "25 kg", prix: "7,90 €" },
+        { designation: "Crème 35 %", qte: "100 L", prix: "5,12 €", negocie: "4,35 €", erreur: true },
+        { designation: "Farine T45", qte: "25 kg", prix: "0,84 €" },
+      ],
+    },
+    phrase: "Le fournisseur A vous doit",
+    montant: "77 €", // (5,12 − 4,35) × 100 L = 77,00 €
+    alerte: "Erreur de facturation détectée",
+  },
+  commandes: {
+    at: 9,
+    titre: "Commandes",
+    couleur: colors.orange,
+    notification: "Il manque du lait sur la livraison de ce matin",
+    heure: "06:42",
+  },
+  inventaires: {
+    at: 11,
+    titre: "Inventaires",
+    couleur: colors.green,
+    valeur: "1 zone",
+    phrase: "reste à compter",
+    progression: 86,
+  },
+  planning: {
+    at: 13,
+    titre: "Planning de production",
+    couleur: colors.green,
+    lignes: ["Pétrissage", "Façonnage", "Cuisson", "Viennoiseries", "Pâtisseries"],
+    // créneaux [ligne, début (h), durée (h), couleur]
+    creneaux: [
+      [0, 0, 2.5, colors.blue],
+      [1, 1.5, 3, colors.orange],
+      [2, 3, 3.5, colors.pink],
+      [3, 0.5, 2.5, colors.green],
+      [4, 4, 3, "#8B6CF0"],
+      [0, 4, 2, colors.blue],
+      [2, 6.5, 1.5, colors.pink],
+      [3, 4, 2, colors.green],
+    ] as [number, number, number, string][],
+    heures: ["4h", "6h", "8h", "10h", "12h"],
+  },
+  marges: {
+    at: 16,
+    titre: "Suivi des marges",
+    sousTitre: "12 mois",
+    couleur: colors.pink,
+    gain: "+3,2 pts",
+    // marge mensuelle (%) sur 12 mois
+    courbe: [68.1, 68.6, 68.2, 69.0, 69.4, 69.1, 69.9, 70.3, 70.0, 70.6, 70.9, 71.3],
+    mois: ["N", "D", "J", "F", "M", "A", "M", "J", "J", "A", "S", "O"],
+  },
+  export: {
+    at: 18,
+    titre: "Export comptable",
+    couleur: colors.green,
+    fichier: "compta_octobre.csv",
+    statut: "Envoyé au cabinet comptable",
+  },
+  ventes: {
+    at: 20,
+    titre: "Analyse des ventes",
+    couleur: colors.blue,
+    legende: ["Achats", "Ventes", "Écarts"],
+    // [achats, ventes] par mois (base 100)
+    barres: [
+      [52, 78],
+      [48, 74],
+      [55, 86],
+      [50, 80],
+      [58, 92],
+      [54, 88],
+    ] as [number, number][],
+  },
+};
