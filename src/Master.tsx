@@ -9,6 +9,7 @@ import { Acte05 } from "./acts/Acte05";
 import { Acte06 } from "./acts/Acte06";
 import { Acte07 } from "./acts/Acte07";
 import { Acte08 } from "./acts/Acte08";
+import { Acte08bis } from "./acts/Acte08bis";
 
 type Act = { key: keyof typeof timeline; C: React.FC; name: string };
 export const ACTES: Act[] = [
@@ -20,6 +21,7 @@ export const ACTES: Act[] = [
   { key: "acte6", C: Acte06, name: "VI · BOOM Coopeo AI" },
   { key: "acte7", C: Acte07, name: "VII · Un nouveau coéquipier" },
   { key: "acte8", C: Acte08, name: "VIII · Agir ensemble" },
+  { key: "acte8bis", C: Acte08bis, name: "VIII bis · Le cercle vertueux" },
 ];
 
 export const Master: React.FC = () => (

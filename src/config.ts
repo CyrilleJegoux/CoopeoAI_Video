@@ -565,3 +565,22 @@ export const acte8 = {
   assigneA: 3.5,
   statutA: 4.2,
 };
+
+// ---------------------------------------------------------------- Acte VIII bis · Le cercle vertueux
+export const acte8bis = {
+  // nœuds dans le sens des aiguilles d'une montre depuis le haut ; le négatif se lit dans l'autre sens
+  noeuds: [
+    { angle: -90, negatif: "Travail dans l'urgence", positif: "Qualité de travail" },
+    { angle: -18, negatif: "Pertes", positif: "Moins de pertes" },
+    { angle: 54, negatif: "Baisse de marge", positif: "Marge" },
+    { angle: 126, negatif: "Baisse du chiffre d'affaires", positif: "Rentabilité" },
+    { angle: 198, negatif: "Turn-over", positif: "Cohésion d'équipe" },
+  ],
+  centreVicieux: ["Sans visibilité,", "tout s'enchaîne."],
+  textes: ["Le cercle vicieux.", "Et si on inversait le sens ?", "Le cercle vertueux."],
+  // instants (s, relatifs à l'acte)
+  inversion: 3.0, // le symbole Coopeo AI s'allume, le cercle freine
+  arret: 3.6, // le cercle s'arrête puis repart dans le sens des aiguilles d'une montre
+  bascule: 3.75, // premier terme qui se raye et se dissout (puis un tous les 0,2 s)
+  vertueux: 5.0,
+};
