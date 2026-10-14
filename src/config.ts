@@ -584,3 +584,25 @@ export const acte8bis = {
   bascule: 3.75, // premier terme qui se raye et se dissout (puis un tous les 0,2 s)
   vertueux: 5.0,
 };
+
+// ---------------------------------------------------------------- Acte IX · Signature
+export const acte9 = {
+  logoA: 0.2,
+  ligneA: 1.0, // « DEPUIS 10 ANS À VOS CÔTÉS »
+  signatureA: 2.0,
+  prudenceA: 3.0,
+  respiration: 7.0, // le logo respire une fois sur le dernier temps
+};
+
+// ---------------------------------------------------------------- Acte X · Merci
+export const acte10 = {
+  titre: ["Merci à celles et ceux", "qui ont construit Coopeo."],
+  // constellation placée à la main (4 rangées libres, ordre de equipeCoopeo)
+  positions: [
+    [300, 480], [560, 430], [830, 470], [1100, 425], [1370, 475], [1630, 440],
+    [200, 620], [450, 590], [700, 640], [950, 600], [1200, 650], [1450, 605], [1700, 650],
+    [250, 780], [490, 810], [730, 770], [970, 820], [1210, 775], [1450, 815], [1690, 790],
+  ] as [number, number][],
+  allumageA: 0.35, // premier prénom
+  pas: 0.07, // un prénom toutes les ~2 images
+};
