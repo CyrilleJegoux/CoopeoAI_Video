@@ -14,3 +14,6 @@ Config.setJpegQuality(92);
 Config.setOverwriteOutput(true);
 Config.setConcurrency(4);
 Config.setChromiumOpenGlRenderer("swangle");
+
+// Marge de sécurité pour les images lourdes (rendu logiciel, 4 onglets en parallèle)
+Config.setDelayRenderTimeoutInMilliseconds(120000);

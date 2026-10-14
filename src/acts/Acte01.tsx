@@ -638,14 +638,18 @@ const F3Envol: React.FC = () => {
             g.addColorStop(0, "rgba(0,0,0,0)");
             g.addColorStop(1, c);
             ctx.strokeStyle = g;
-            ctx.lineWidth = w;
-            ctx.shadowColor = c;
-            ctx.shadowBlur = 14;
-            ctx.globalAlpha = al * (1 - warm * 0.6);
-            ctx.beginPath();
-            ctx.moveTo(x0, y);
-            ctx.bezierCurveTo(x0 + len * 0.4, y, x0 + len * 0.6, y - (y - 540) * 0.25, x0 + len, y - (y - 520) * 0.32);
-            ctx.stroke();
+            // lueur : trait large et transparent (au lieu d'un shadowBlur, très lent en rendu logiciel)
+            for (const [lw, la] of [
+              [w * 6, 0.12],
+              [w, 1],
+            ] as [number, number][]) {
+              ctx.lineWidth = lw;
+              ctx.globalAlpha = al * la * (1 - warm * 0.6);
+              ctx.beginPath();
+              ctx.moveTo(x0, y);
+              ctx.bezierCurveTo(x0 + len * 0.4, y, x0 + len * 0.6, y - (y - 540) * 0.25, x0 + len, y - (y - 520) * 0.32);
+              ctx.stroke();
+            }
           }
           for (let i = 0; i < 220; i++) {
             const x = r() * 1920 + shift * 0.6,
@@ -653,8 +657,6 @@ const F3Envol: React.FC = () => {
               s = r() * 2.2;
             ctx.globalAlpha = (0.25 + r() * 0.6) * prog(fr, 6, 20);
             ctx.fillStyle = x < 700 ? "#FFCF8A" : "#9FD8FF";
-            ctx.shadowBlur = 6;
-            ctx.shadowColor = ctx.fillStyle;
             ctx.beginPath();
             ctx.arc(x, y, s, 0, 7);
             ctx.fill();
