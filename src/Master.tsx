@@ -4,12 +4,14 @@ import { f, timeline } from "./config";
 import { Acte01 } from "./acts/Acte01";
 import { Acte02 } from "./acts/Acte02";
 import { Acte03 } from "./acts/Acte03";
+import { Acte04 } from "./acts/Acte04";
 
 type Act = { key: keyof typeof timeline; C: React.FC; name: string };
 export const ACTES: Act[] = [
   { key: "acte1", C: Acte01, name: "I · Il y a 10 ans" },
   { key: "acte2", C: Acte02, name: "II · Coopeo évolue" },
   { key: "acte3", C: Acte03, name: "III · Le déferlement" },
+  { key: "acte4", C: Acte04, name: "IV · L'équipe à bord" },
 ];
 
 export const Master: React.FC = () => (

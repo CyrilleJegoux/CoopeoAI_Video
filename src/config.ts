@@ -252,3 +252,27 @@ export const acte3 = {
     ] as [number, number][],
   },
 };
+
+// ---------------------------------------------------------------- Acte IV · L'équipe à bord
+export const acte4 = {
+  fil: {
+    titre: "Fil de l'équipe",
+    sousTitre: "Boulangerie du Port",
+    messages: [
+      { at: 0.5, qui: 0, texte: "Rupture sur les baguettes !", heure: "10:24", alerte: true },
+      { at: 1.5, qui: 1, texte: "Je relance une fournée de 40.", heure: "10:25", fait: true },
+    ],
+    indicateur: { at: 3.0, label: "Pertes du jour", valeur: 12 }, // −12 %
+    texte: "Avant, l'info se perdait dans les groupes de discussion.",
+    texteA: 0.9,
+  },
+  equipe: {
+    start: 6,
+    // une micro-action par collaborateur (même ordre que equipeClient)
+    actions: ["Vente clôturée", "Fournée relancée", "Inventaire validé", "Commande passée", "Recette mise à jour", "Planning ajusté"],
+    jauge: { label: "Objectifs de la semaine", valeur: 94 },
+    texte: "Chaque collaborateur fait avancer l'entreprise.",
+    texteA: 1.0, // relatif à start
+    pas: 0.5, // un avatar s'allume tous les temps
+  },
+};
