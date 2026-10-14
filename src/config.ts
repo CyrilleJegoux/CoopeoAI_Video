@@ -310,3 +310,12 @@ export const acte5 = {
     extinction: [8.7, 9.05, 8.82, 9.2],
   },
 };
+
+// ---------------------------------------------------------------- Acte VI · BOOM Coopeo AI
+export const acte6 = {
+  impact: 0, // flash + onde de choc (sub drop pile sur cette image)
+  logo: 0.9, // le logo officiel est en place, net
+  ai: 1.0, // « AI » surgit
+  stabilisation: 2.5,
+  tremblement: 5, // images de tremblement de caméra
+};
