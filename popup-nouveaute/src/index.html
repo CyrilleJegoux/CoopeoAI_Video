@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Coopeo · Nouveauté</title>
+<style>
+@font-face{font-family:"Manrope";font-weight:800;src:url(../node_modules/@fontsource/manrope/files/manrope-latin-800-normal.woff2) format("woff2")}
+:root{--W:560px;--H:700px;--electric:#3DB8FF;--electric-hot:#BFF0FF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:var(--W);height:var(--H);overflow:hidden;background:#070D22}
+body{font-family:"Manrope",sans-serif;-webkit-font-smoothing:antialiased}
+.stage{position:relative;width:var(--W);height:var(--H);overflow:hidden;
+  background:radial-gradient(ellipse 120% 85% at 50% 42%,#13306F 0%,#0A1844 48%,#050B1E 100%)}
+.abs{position:absolute;left:0;top:0}
+#halo{width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle,rgba(61,184,255,.42) 0%,rgba(61,184,255,.12) 38%,rgba(61,184,255,0) 70%)}
+#rays{width:900px;height:900px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(191,240,255,.07) 0deg 7deg,rgba(191,240,255,0) 7deg 30deg);
+  -webkit-mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.6) 25%,transparent 62%);
+          mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.6) 25%,transparent 62%)}
+.ring{width:100px;height:100px;border-radius:50%;border:3px solid var(--electric-hot);
+  box-shadow:0 0 18px rgba(61,184,255,.8),inset 0 0 18px rgba(61,184,255,.5)}
+.dot{width:59px;height:59px}
+.p{border-radius:50%}
+.spark{width:28px;height:28px}
+#word{left:0;right:0;width:100%;top:452px;text-align:center;font-weight:800;font-size:68px;
+  letter-spacing:-.02em;line-height:1;white-space:nowrap}
+#word .m{display:inline-block;overflow:hidden;padding:0 .015em .12em;margin-bottom:-.12em;vertical-align:top}
+#word{filter:drop-shadow(0 0 14px rgba(61,184,255,.45))}
+#word .l{display:inline-block;color:transparent;background:#EAF4FF;-webkit-background-clip:text;background-clip:text}
+#dashes{left:0;right:0;width:100%;top:552px;display:flex;justify-content:center;gap:12px}
+#dashes i{display:block;height:7px;width:40px;border-radius:4px;transform-origin:left center}
+.vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 75% at 50% 48%,transparent 55%,rgba(0,0,0,.45) 100%)}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="abs" id="rays"></div>
+  <div class="abs" id="halo"></div>
+  <div id="particles"></div>
+  <div class="abs ring" id="ring1"></div>
+  <div class="abs ring" id="ring2"></div>
+  <img class="abs dot" id="d0" src="dot-pink.png" alt="">
+  <img class="abs dot" id="d1" src="dot-orange.png" alt="">
+  <img class="abs dot" id="d2" src="dot-green.png" alt="">
+  <img class="abs dot" id="d3" src="dot-blue.png" alt="">
+  <div id="sparks"></div>
+  <div class="abs" id="word"></div>
+  <div class="abs" id="dashes"><i style="background:#E01E6D"></i><i style="background:#F48C03"></i><i style="background:#0CBF88"></i><i style="background:#129BE0"></i></div>
+  <div class="vignette"></div>
+</div>
+<script>
+// ---------- Réglages ----------
+const W = 560, H = 700, FPS = 30, DURATION = 8;    // 8 s, 240 images
+const WORD = 'Nouveauté';
+const COLORS = ['#E01E6D', '#F48C03', '#0CBF88', '#129BE0'];
+// Position de chaque pastille dans le symbole officiel (600 px), rapportée au centre.
+const OFFS = [[0, -183.5], [-183.5, 0], [183.5, 0], [0, 183.5]];
+const SYMBOL = 150;          // largeur du symbole à l'écran (px)
+const K = SYMBOL / 600;
+const DOT = 59;
+
+// ---------- Outils ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+const easeInOutCubic = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const easeInOutQuint = t => t < .5 ? 16 * t ** 5 : 1 - Math.pow(-2 * t + 2, 5) / 2;
+const easeOutExpo = t => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+const easeOutBack = (t, s = 1.7) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2);
+// Ressort amorti : 0 -> 1 avec un léger rebond
+const spring = (t, f = 2.2, d = 6) => t <= 0 ? 0 : 1 - Math.exp(-d * t) * Math.cos(2 * Math.PI * f * t);
+// Petite bosse 0 -> 1 -> 0
+const bump = (t, a, b) => { const p = prog(t, a, b); return Math.sin(Math.PI * p); };
+const $ = id => document.getElementById(id);
+const place = (el, x, y, w, h, extra = '') =>
+  el.style.transform = `translate(${x - w / 2}px,${y - h / 2}px) ${extra}`;
+
+// Générateur pseudo-aléatoire stable (même vidéo à chaque rendu)
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// ---------- Construction ----------
+const word = $('word');
+[...WORD].forEach(ch => {
+  const m = document.createElement('span'); m.className = 'm';
+  const l = document.createElement('span'); l.className = 'l'; l.textContent = ch;
+  m.appendChild(l); word.appendChild(m);
+});
+const letters = [...word.querySelectorAll('.l')];
+const lettersX = letters.map(l => l.getBoundingClientRect().left - word.firstChild.getBoundingClientRect().left);
+const wordW = word.lastChild.getBoundingClientRect().right - word.firstChild.getBoundingClientRect().left;
+const dashes = [...$('dashes').children];
+const dots = [0, 1, 2, 3].map(i => $('d' + i));
+
+const particles = [];
+for (let i = 0; i < 22; i++) {
+  const el = document.createElement('div');
+  el.className = 'abs p';
+  const size = 3 + rnd() * 6;
+  el.style.width = el.style.height = size + 'px';
+  const c = COLORS[i % 4];
+  el.style.background = c;
+  el.style.boxShadow = `0 0 ${size * 1.6}px ${c}`;
+  $('particles').appendChild(el);
+  particles.push({ el, size, x: 30 + rnd() * (W - 60), start: 1.3 + rnd() * 3.6,
+    life: 2.4 + rnd() * 1.6, rise: 140 + rnd() * 160, sway: 8 + rnd() * 14, ph: rnd() * 6.28 });
+}
+
+const SPARK_SVG = '<svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z" fill="#EAF8FF"/></svg>';
+const sparks = [
+  { x: 168, y: 196, t: 1.30, s: 1.0 }, { x: 395, y: 170, t: 1.42, s: .75 },
+  { x: 410, y: 372, t: 1.55, s: .9 },  { x: 150, y: 360, t: 1.70, s: .6 },
+  { x: 380, y: 200, t: 3.00, s: .7 },  { x: 182, y: 330, t: 3.25, s: .55 },
+  { x: 150, y: 210, t: 5.45, s: .9 },  { x: 412, y: 352, t: 5.52, s: 1.0 },
+  { x: 404, y: 196, t: 5.65, s: .6 },  { x: 470, y: 300, t: 2.75, s: .55 },
+  { x: 92,  y: 240, t: 2.90, s: .5 },
+].map(s => {
+  const el = document.createElement('div');
+  el.className = 'abs spark'; el.innerHTML = SPARK_SVG;
+  el.style.filter = 'drop-shadow(0 0 6px #3DB8FF)';
+  $('sparks').appendChild(el);
+  return { ...s, el };
+});
+
+// ---------- Une image à l'instant t (secondes) ----------
+function seek(t) {
+  // Centre du symbole : arrive au centre, puis remonte pour laisser la place au texte
+  const lift = easeInOutCubic(prog(t, 1.35, 2.05));
+  const cx = W / 2;
+  const float = 3 * Math.sin((t - 3.2) * 2.2) * bump(t, 3.0, 7.4);
+  const cy = lerp(350, 290, lift) + float;
+  const gScale = lerp(1.2, 1, lift);
+
+  // Rotation du groupe : spirale d'entrée, puis un tour complet vers 4,6 s
+  const spin = 360 * easeInOutQuint(prog(t, 4.55, 5.45));
+
+  // Impact quand les pastilles se rejoignent, puis rebond
+  const squash = 1 - 0.14 * Math.exp(-7 * Math.max(0, t - 1.22)) * Math.sin(Math.PI * clamp((t - 1.22) / 0.16)) ;
+  const settle = t > 1.22 ? 1 + 0.05 * Math.exp(-6 * (t - 1.38)) * Math.sin(2 * Math.PI * 2.4 * (t - 1.38)) * (t > 1.38) : 1;
+
+  dots.forEach((el, i) => {
+    const p = clamp((t - 0.12 - i * 0.07) / 1.05);
+    const e = easeOutCubic(p);
+    const radius = lerp(4.6, 1, e);
+    const swirl = (-220 * (1 - e) + spin) * Math.PI / 180;
+    const [ox, oy] = OFFS[i];
+    const rx = ox * radius, ry = oy * radius;
+    const x = cx + (rx * Math.cos(swirl) - ry * Math.sin(swirl)) * K * gScale;
+    const y = cy + (rx * Math.sin(swirl) + ry * Math.cos(swirl)) * K * gScale;
+    // Respiration en vague : chaque pastille à tour de rôle
+    const breathe = 1 + 0.07 * Math.max(0, Math.sin((t - 2.9) * 4.2 - i * Math.PI / 2)) *
+      (bump(t, 2.9, 4.5) + bump(t, 5.5, 7.1));
+    const s = lerp(0.25, 1, easeOutBack(p, 1.4)) * gScale * squash * settle * breathe;
+    place(el, x, y, DOT, DOT, `scale(${s})`);
+    el.style.opacity = clamp(p * 5);
+    const glow = 10 + 10 * bump(t, 1.2, 2.0) + 8 * bump(t, 5.3, 6.1) + 4 * (breathe - 1) / 0.07;
+    el.style.filter = `drop-shadow(0 0 ${glow}px ${COLORS[i]}aa)`;
+  });
+
+  // Halo et rayons derrière le symbole
+  const haloIn = easeOutCubic(prog(t, 0.0, 1.4));
+  const haloPulse = 1 + 0.35 * bump(t, 1.2, 2.2) + 0.25 * bump(t, 5.3, 6.3);
+  place($('halo'), cx, cy, 520, 520, `scale(${(0.6 + 0.4 * haloIn) * haloPulse})`);
+  $('halo').style.opacity = 0.35 + 0.65 * haloIn * Math.min(1.2, haloPulse) / 1.2;
+  place($('rays'), cx, cy, 900, 900, `rotate(${t * 9}deg) scale(${0.85 + 0.15 * haloIn})`);
+  $('rays').style.opacity = easeOutCubic(prog(t, 1.2, 2.4));
+
+  // Ondes de choc : à l'impact, puis à la fin du tour
+  [[$('ring1'), 1.22], [$('ring2'), 5.42]].forEach(([el, t0]) => {
+    const p = prog(t, t0, t0 + 0.75);
+    const r = lerp(0.6, 4.2, easeOutExpo(p));
+    place(el, cx, cy, 100, 100, `scale(${r})`);
+    el.style.opacity = p > 0 && p < 1 ? (1 - p) * 0.9 : 0;
+    el.style.borderWidth = lerp(5, 0.6, p) + 'px';
+  });
+
+  // Étincelles
+  sparks.forEach(s => {
+    const p = prog(t, s.t, s.t + 0.6);
+    const k = Math.sin(Math.PI * p) * s.s;
+    place(s.el, s.x, s.y + (cy - 290), 28, 28, `scale(${k}) rotate(${p * 90}deg)`);
+    s.el.style.opacity = p > 0 && p < 1 ? 1 : 0;
+  });
+
+  // Particules colorées qui montent doucement
+  particles.forEach(q => {
+    const p = (t - q.start) / q.life;
+    const vis = p > 0 && p < 1 && t < 7.3;
+    q.el.style.opacity = vis ? Math.sin(Math.PI * p) * 0.85 * (1 - prog(t, 6.6, 7.3)) : 0;
+    const y = 640 - q.rise * clamp(p);
+    const x = q.x + q.sway * Math.sin(q.ph + t * 2);
+    place(q.el, x, y, q.size, q.size);
+  });
+
+  // Mot « Nouveauté » : chaque lettre surgit de sous un masque
+  letters.forEach((l, i) => {
+    const p = clamp((t - 1.72 - i * 0.045) / 0.55);
+    const e = easeOutBack(p, 1.6);
+    l.style.transform = `translateY(${(1 - e) * 110}%)`;
+  });
+  // Reflet qui balaie le mot (calculé lettre par lettre pour rester aligné)
+  const band = lerp(-80, wordW + 80, easeInOutCubic(prog(t, 2.55, 3.35)));
+  letters.forEach((l, i) => {
+    const b = band - lettersX[i];
+    l.style.backgroundImage = `linear-gradient(100deg,#EAF4FF ${b - 46}px,#7FD6FF ${b - 14}px,#FFFFFF ${b}px,#7FD6FF ${b + 14}px,#EAF4FF ${b + 46}px)`;
+  });
+
+  // Les quatre traits aux couleurs Coopeo
+  dashes.forEach((d, i) => {
+    const p = easeOutExpo(prog(t, 2.25 + i * 0.09, 2.25 + i * 0.09 + 0.5));
+    d.style.transform = `scaleX(${p})`;
+    d.style.opacity = p > 0 ? 1 : 0;
+  });
+}
+
+window.seek = seek;
+window.META = { W, H, FPS, DURATION };
+// Aperçu dans un navigateur : lecture en boucle
+if (!/render/.test(location.search)) {
+  const t0 = performance.now();
+  const loop = () => { seek(((performance.now() - t0) / 1000) % (DURATION + 1)); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+} else seek(0);
+</script>
+</body>
+</html>
