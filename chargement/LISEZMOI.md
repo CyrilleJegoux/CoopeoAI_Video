@@ -24,22 +24,26 @@
 |---|---|
 | `coopeo-loader.css` | Toute l'animation (couleurs, mouvements, textes) |
 | `CoopeoLoader.tsx` | Le composant React prêt pour Lovable |
+| `coopeo-transition.ts` | La transition depuis la page de connexion et vers le dashboard (utilisée par `CoopeoLoader.tsx`) |
 | `demo.html` | La page de démonstration : ouvre-la dans un navigateur pour voir l'animation en vrai |
 | `export/apercu-chargement.mp4` | Aperçu vidéo de 8 secondes |
 
 ## Intégration avec Lovable
 
-1. Copie `coopeo-loader.css` et `CoopeoLoader.tsx` dans le dossier `src/components/` de ton projet.
+Pour la version complète, avec la transition depuis le bouton « Se connecter » jusqu'au logo de la barre latérale, suis `transition/LISEZMOI.md`.
+
+Version simple (écran de chargement seul, qui s'efface en fondu) :
+
+1. Copie `coopeo-loader.css`, `CoopeoLoader.tsx` et `coopeo-transition.ts` dans le dossier `src/components/` de ton projet.
 2. Donne ce message à Lovable :
 
 ```
-J'ai ajouté src/components/CoopeoLoader.tsx et src/components/coopeo-loader.css.
+J'ai ajouté src/components/CoopeoLoader.tsx, coopeo-loader.css et coopeo-transition.ts. Ne modifie pas ces fichiers.
 Après la connexion, pendant le chargement des données du dashboard, affiche <CoopeoLoader prenom={prénom de l'utilisateur} /> en plein écran à la place de l'écran de chargement actuel.
 Règles :
 - ne l'affiche que si le chargement dure plus de 300 ms (pas de flash si c'est rapide) ;
 - une fois affiché, garde-le au moins 1,2 seconde pour que l'animation ait le temps de se voir ;
-- quand les données sont prêtes, passe leaving={true}, attends 350 ms, puis retire le composant ;
-- ne modifie pas le fichier CSS.
+- quand les données sont prêtes, passe leaving={true}, puis retire le composant quand il appelle onDone.
 ```
 
 3. Si les polices Fraunces et Inter ne sont pas déjà chargées dans l'application, ajoute dans `index.html` :

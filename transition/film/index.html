@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Transition connexion → dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1904px;height:896px;overflow:hidden;background:#fff;font-family:Inter,sans-serif}
+.stage{position:relative;width:1904px;height:896px;overflow:hidden}
+.abs{position:absolute;left:0;top:0}
+#login{width:1904px;height:896px;transform-origin:268px 611px}
+#btn{left:110px;top:593px;width:317px;height:37px;border-radius:12px;background:#C25409;color:#fff;
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden}
+#cursor{width:26px;height:26px}
+/* Écran de chargement (même rendu que chargement/coopeo-loader.css) */
+#loader{width:1904px;height:896px;
+  background:radial-gradient(ellipse 60% 50% at 50% 42%,rgba(18,155,224,.07),transparent 70%),
+             radial-gradient(ellipse 45% 35% at 50% 46%,rgba(244,140,3,.05),transparent 70%),#FBFCFE}
+#title{left:0;width:100%;top:456px;text-align:center;font-family:Fraunces,serif;font-style:italic;font-weight:600;
+  font-size:34px;letter-spacing:-.01em;color:#0F172A}
+.msg{left:0;width:100%;top:510px;display:flex;justify-content:center;align-items:center;gap:9px;font-size:15px;color:#64748B}
+.msg i{width:7px;height:7px;border-radius:50%}
+#bar{left:862px;top:561px;width:180px;height:4px;border-radius:4px;background:#E8ECF2;overflow:hidden}
+#bar b{position:absolute;top:0;bottom:0;width:81px;border-radius:4px;background:linear-gradient(90deg,#F48C03,#E01E6D,#0CBF88,#129BE0)}
+#foot{left:0;width:100%;top:850px;text-align:center;font-size:13px;color:#94A3B8}
+.dot{width:36px;height:36px;border-radius:50%}
+/* Dashboard */
+#dash{width:1904px;height:896px;background:#E9ECF1}
+#logoMask{left:15px;top:10px;width:33px;height:33px;background:#1F2638}
+#ring{width:200px;height:200px;border-radius:50%;border:2px solid rgba(18,155,224,.35);box-shadow:0 0 60px rgba(18,155,224,.25),inset 0 0 40px rgba(18,155,224,.12)}
+#landing{width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="abs" id="dash">
+    <img class="abs" id="p-header" src="img/header.png" style="left:236px;top:0">
+    <img class="abs" id="p-start" src="img/start.png" style="left:236px;top:246px">
+    <img class="abs" id="p-factures" src="img/factures.png" style="left:236px;top:385px">
+    <img class="abs" id="p-usage" src="img/usage.png" style="left:1619px;top:246px">
+    <img class="abs" id="p-titre" src="img/titre.png" style="left:236px;top:652px">
+    <img class="abs" id="p-activite" src="img/activite.png" style="left:236px;top:710px">
+    <img class="abs" id="p-aide" src="img/aide.png" style="left:1853px;top:780px">
+    <div class="abs" id="sidebar"><img src="img/sidebar.png" style="display:block"><div class="abs" id="logoMask"></div></div>
+    <div class="abs" id="landing"></div>
+  </div>
+  <div class="abs" id="loginWrap">
+    <img class="abs" id="login" src="img/login.jpg">
+    <div class="abs" id="btn"><span id="btnText">Se connecter</span></div>
+  </div>
+  <div class="abs" id="loader">
+    <div class="abs" id="title">Bonjour Cyrille</div>
+    <div class="abs msg" id="m0"><i style="background:#F48C03"></i>Récupération de vos factures</div>
+    <div class="abs msg" id="m1"><i style="background:#E01E6D"></i>Calcul de vos marges</div>
+    <div class="abs msg" id="m2"><i style="background:#129BE0"></i>Préparation de votre tableau de bord</div>
+    <div class="abs" id="bar"><b id="barFill"></b></div>
+    <div class="abs" id="foot">Coopeo — votre copilote de gestion</div>
+  </div>
+  <div class="abs" id="ring"></div>
+  <div class="abs dot" id="d0" style="background:#E01E6D;box-shadow:0 6px 16px rgba(224,30,109,.28)"></div>
+  <div class="abs dot" id="d1" style="background:#F48C03;box-shadow:0 6px 16px rgba(244,140,3,.28)"></div>
+  <div class="abs dot" id="d2" style="background:#0CBF88;box-shadow:0 6px 16px rgba(12,191,136,.28)"></div>
+  <div class="abs dot" id="d3" style="background:#129BE0;box-shadow:0 6px 16px rgba(18,155,224,.28)"></div>
+  <svg class="abs" id="cursor" viewBox="0 0 24 24"><path d="M4 2l15 11-6.5 1.2L16 21l-3 1.4-3.4-6.9L4 20z" fill="#111" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+<script>
+const W = 1904, H = 896, FPS = 30, DURATION = 7;
+// Géométrie du symbole officiel (carré de 600) : pastilles de 236, à 183,5 du centre
+const OFFS = [[0, -1], [-1, 0], [1, 0], [0, 1]];
+const BTN = { x: 268.5, y: 611 };               // centre du bouton « Se connecter »
+const CENTER = { x: W / 2, y: 376 };             // symbole de l'écran de chargement
+const LOGO = { x: 31.5, y: 26.5, size: 27 };     // symbole de la barre latérale
+const BIG = 92;                                  // taille du symbole pendant le chargement
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const inOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const inOutQuad = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const outCubic = t => 1 - Math.pow(1 - t, 3);
+const outBack = (t, s = 1.6) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2);
+const reveal = t => t < .5 ? 8 * t ** 4 : 1 - Math.pow(-2 * t + 2, 4) / 2;
+const $ = id => document.getElementById(id);
+const css = (el, o) => Object.assign(el.style, o);
+
+// Mouvement de l'écran de chargement : repos, tour complet en s'écartant, retour au logo
+function loaderPose(lt) {
+  const L = 2.4, p = (lt % L) / L;
+  const rot = 360 * inOut(prog(p, .16, .80));
+  const out = p < .48 ? Math.sin(Math.PI / 2 * prog(p, .16, .48)) : 1 - inOutQuad(prog(p, .48, .80));
+  const bounce = p > .80 ? 0.1 * Math.exp(-6 * (p - .80) / .2) * Math.cos(Math.PI * 2.4 * (p - .80) / .2) : 0;
+  return { rot, spread: 0.2 * out, scale: 1 - 0.2 * out + bounce };
+}
+
+function seek(t) {
+  // 1. Curseur qui va cliquer sur « Se connecter »
+  const cm = inOut(prog(t, 0, .45));
+  css($('cursor'), { transform: `translate(${lerp(560, BTN.x + 30, cm)}px,${lerp(760, BTN.y - 2, cm)}px) scale(${1 - .12 * Math.sin(Math.PI * prog(t, .48, .66))})`,
+    opacity: 1 - prog(t, .75, .9) });
+
+  // 2. Le bouton s'enfonce puis se replie en pastille
+  const press = 1 - .04 * Math.sin(Math.PI * prog(t, .48, .66));
+  const fold = inOut(prog(t, .62, .98));
+  const bw = lerp(317, 37, fold);
+  css($('btn'), { left: BTN.x - bw / 2 + 'px', width: bw + 'px', borderRadius: lerp(12, 18.5, fold) + 'px',
+    transform: `scale(${press})`, opacity: 1 - prog(t, 1.15, 1.3) });
+  $('btnText').style.opacity = 1 - prog(t, .6, .78);
+  // la page de connexion recule légèrement pendant que le chargement s'ouvre
+  const back = inOut(prog(t, .85, 1.55));
+  css($('login'), { transform: `scale(${1 - .03 * back})`, filter: `blur(${2 * back}px)` });
+
+  // 3. L'écran de chargement s'ouvre en cercle depuis le bouton, puis s'efface vers le dashboard
+  const R = Math.hypot(W - BTN.x, BTN.y);
+  const open = reveal(prog(t, .9, 1.65));
+  const leave = prog(t, 4.45, 5.0);
+  css($('loader'), { clipPath: `circle(${lerp(0, R, open)}px at ${BTN.x}px ${BTN.y}px)`, opacity: 1 - outCubic(leave) });
+  // liseré bleuté qui suit le bord du cercle pour qu'on voie l'ouverture sur fond blanc
+  const rr = lerp(0, R, open);
+  css($('ring'), { transform: `translate(${BTN.x - 100}px,${BTN.y - 100}px) scale(${rr / 100})`,
+    borderWidth: 2 * 100 / Math.max(rr, 1) + 'px', opacity: open > 0 && open < 1 ? Math.sin(Math.PI * open) : 0 });
+  $('loginWrap').style.visibility = open >= 1 ? 'hidden' : 'visible';
+
+  const textsOut = 1 - prog(t, 4.3, 4.55);
+  const ti = outCubic(prog(t, 1.55, 2.05));
+  css($('title'), { opacity: ti * textsOut, transform: `translateY(${(1 - ti) * 12}px)` });
+  [[0, 1.75, 2.95], [1, 2.95, 3.85], [2, 3.85, 9]].forEach(([i, a, b]) => {
+    const inn = outCubic(prog(t, a, a + .25)), out = prog(t, b, b + .2);
+    css($('m' + i), { opacity: inn * (1 - out) * textsOut, transform: `translateY(${(1 - inn) * 8 - out * 8}px)` });
+  });
+  css($('bar'), { opacity: outCubic(prog(t, 1.8, 2.1)) * textsOut });
+  $('barFill').style.transform = `translateX(${lerp(-90, 205, inOut(((t - 1.8) % 1.6 + 1.6) % 1.6 / 1.6))}px)`;
+  $('foot').style.opacity = outCubic(prog(t, 1.9, 2.3)) * textsOut;
+
+  // 4. Les pastilles : sortent du bouton, tournent pendant le chargement, puis filent vers la barre latérale
+  const emerge = prog(t, .95, 1.8);
+  const fly = prog(t, 4.35, 5.15);
+  const pose = loaderPose(Math.max(0, t - 1.8));
+  let cx, cy, size, rot = pose.rot, spread = pose.spread, ds = pose.scale;
+  if (t < 1.8) {
+    const e = outBack(emerge, 1.2);
+    cx = lerp(BTN.x, CENTER.x, inOut(emerge)); cy = lerp(BTN.y, CENTER.y, outCubic(emerge));
+    size = lerp(22, BIG, e); rot = lerp(-180, 0, outCubic(emerge)); spread = 0; ds = 1;
+  } else {
+    cx = lerp(CENTER.x, LOGO.x, inOut(fly));
+    cy = lerp(CENTER.y, LOGO.y, inOutQuad(fly));   // courbes différentes en x et en y : trajectoire en arc
+    size = lerp(BIG, LOGO.size, inOut(fly));
+  }
+  const k = size / 600, r = rot * Math.PI / 180;
+  const land = prog(t, 5.15, 5.3);
+  for (let i = 0; i < 4; i++) {
+    const d = 183.5 + 600 * spread;
+    const ox = OFFS[i][0] * d, oy = OFFS[i][1] * d;
+    const x = cx + (ox * Math.cos(r) - oy * Math.sin(r)) * k;
+    const y = cy + (ox * Math.sin(r) + oy * Math.cos(r)) * k;
+    const dia = 236 * k * ds;
+    css($('d' + i), { transform: `translate(${x - 18}px,${y - 18}px) scale(${dia / 36})`,
+      opacity: (t < .95 ? 0 : clamp(emerge * 6)) * (1 - land) });
+  }
+
+  // 5. Le dashboard se construit : barre latérale, puis les blocs un par un
+  const sb = outCubic(prog(t, 4.45, 5.0));
+  $('sidebar').style.transform = `translateX(${(sb - 1) * 223}px)`;
+  $('logoMask').style.opacity = 1 - land;
+  const lr = prog(t, 5.15, 5.75);
+  css($('landing'), { transform: `translate(${LOGO.x - 20}px,${LOGO.y - 20}px) scale(${lerp(.6, 2.2, outCubic(lr))})`,
+    opacity: lr > 0 && lr < 1 ? .7 * (1 - lr) : 0 });
+  ['header', 'start', 'usage', 'factures', 'titre', 'activite'].forEach((n, i) => {
+    const p = outCubic(prog(t, 4.6 + i * .08, 5.2 + i * .08));
+    css($('p-' + n), { opacity: p, transform: `translateY(${(1 - p) * 22}px)` });
+  });
+  const aide = outBack(prog(t, 5.3, 5.7));
+  css($('p-aide'), { opacity: clamp(aide * 3), transform: `scale(${aide})` });
+}
+window.seek = seek;
+window.META = { W, H, FPS, DURATION };
+if (!/render/.test(location.search)) {
+  const t0 = performance.now();
+  const loop = () => { seek(((performance.now() - t0) / 1000) % (DURATION + 1)); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+} else seek(0);
+</script>
+</body>
+</html>

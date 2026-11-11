@@ -1,10 +1,15 @@
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { ouvrirChargement, versDashboard } from "./coopeo-transition";
 import "./coopeo-loader.css";
 
 type CoopeoLoaderProps = {
   /** Prénom affiché dans « Bonjour … ». Sans prénom : « Bienvenue ». */
   prenom?: string;
-  /** Passe à true quand les données sont prêtes : l'écran s'efface en fondu (0,35 s). */
+  /** Passe à true quand les données sont prêtes et que le dashboard est affiché dessous :
+   *  les pastilles filent vers le logo de la barre latérale et le dashboard apparaît. */
   leaving?: boolean;
+  /** Appelé à la fin de la transition : c'est le moment de retirer le composant. */
+  onDone?: () => void;
 };
 
 // Un message par couleur Coopeo (orange, rose, vert, bleu), affichés à tour de rôle.
@@ -15,19 +20,40 @@ const MESSAGES = [
   "Préparation de votre tableau de bord",
 ];
 
-export default function CoopeoLoader({ prenom, leaving = false }: CoopeoLoaderProps) {
+export default function CoopeoLoader({ prenom, leaving = false, onDone }: CoopeoLoaderProps) {
+  const ecran = useRef<HTMLDivElement>(null);
+
+  // Ouverture en cercle depuis le bouton « Se connecter » (si lancerConnexion a été appelé)
+  useLayoutEffect(() => {
+    if (ecran.current) ouvrirChargement(ecran.current);
+  }, []);
+
+  useEffect(() => {
+    if (!leaving || !ecran.current) return;
+    let annule = false;
+    versDashboard(ecran.current).then(() => {
+      if (!annule) onDone?.();
+    });
+    return () => {
+      annule = true;
+    };
+  }, [leaving]);
+
   return (
     <div
-      className={`cl-screen${leaving ? " cl-leaving" : ""}`}
+      ref={ecran}
+      className="cl-screen"
       role="status"
       aria-live="polite"
       aria-label="Chargement de votre espace Coopeo"
     >
-      <div className="cl-symbol" aria-hidden="true">
-        <span className="cl-dot p" />
-        <span className="cl-dot o" />
-        <span className="cl-dot g" />
-        <span className="cl-dot b" />
+      <div className="cl-flight" aria-hidden="true">
+        <div className="cl-symbol">
+          <span className="cl-dot p" />
+          <span className="cl-dot o" />
+          <span className="cl-dot g" />
+          <span className="cl-dot b" />
+        </div>
       </div>
       <h1 className="cl-title">{prenom ? `Bonjour ${prenom}` : "Bienvenue"}</h1>
       <div className="cl-messages">

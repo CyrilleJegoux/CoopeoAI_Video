@@ -23,13 +23,22 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  isolation: isolate;
+  font-family: var(--cl-sans);
+  color: var(--cl-ink);
+  animation: cl-appear .45s ease-out both;
+}
+/* Le fond est à part pour pouvoir s'effacer seul pendant la transition vers le dashboard */
+.cl-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background:
     radial-gradient(ellipse 60% 50% at 50% 42%, rgba(18, 155, 224, .07), transparent 70%),
     radial-gradient(ellipse 45% 35% at 50% 46%, rgba(244, 140, 3, .05), transparent 70%),
     #FBFCFE;
-  font-family: var(--cl-sans);
-  color: var(--cl-ink);
-  animation: cl-appear .45s ease-out both;
+  transition: opacity .5s ease;
 }
 
 /* ---------- Le symbole animé ---------- */
@@ -182,7 +191,13 @@
 @keyframes cl-appear { from { opacity: 0; } }
 @keyframes cl-rise { from { opacity: 0; transform: translateY(10px); } }
 
-/* Sortie en fondu, à ajouter quand les données sont prêtes */
+/* Transition vers le dashboard (voir coopeo-transition.ts) : le fond s'efface,
+   les pastilles restent visibles et filent vers le logo de la barre latérale */
+.cl-flight { position: relative; }
+.cl-screen.cl-to-dashboard { pointer-events: none; }
+.cl-screen.cl-to-dashboard::before { opacity: 0; }
+
+/* Sortie en simple fondu (quand la transition complète n'est pas possible) */
 .cl-screen.cl-leaving { animation: cl-leave .35s ease-in forwards; }
 @keyframes cl-leave { to { opacity: 0; transform: scale(1.02); } }
 
