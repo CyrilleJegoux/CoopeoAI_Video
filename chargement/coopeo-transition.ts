@@ -1,7 +1,7 @@
 // Transition Coopeo : page de connexion -> écran de chargement -> dashboard.
 //
 // 1. lancerConnexion(bouton)  : au clic sur « Se connecter », le bouton se replie en pastille
-//                               et sa position est mémorisée.
+//                               qui respire tant que le serveur vérifie, et sa position est mémorisée.
 // 2. ouvrirChargement(écran)  : l'écran de chargement s'ouvre en cercle depuis le bouton,
 //                               les pastilles en sortent (appelé par CoopeoLoader).
 // 3. versDashboard(écran)     : les pastilles filent se poser sur le logo de la barre latérale
@@ -12,6 +12,13 @@ const CLE = "coopeo-transition-origine";
 const EASE = "cubic-bezier(.65, 0, .35, 1)";
 const BOUCLE = 2400; // durée d'un tour des pastilles, identique à --cl-loop
 
+// Onde autour de la pastille pendant la vérification du mot de passe
+let ondeAttente: HTMLElement | null = null;
+const arreterAttente = () => {
+  ondeAttente?.remove();
+  ondeAttente = null;
+};
+
 const animationsReduites = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const attendre = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -20,7 +27,8 @@ const attendre = (ms: number) => new Promise((r) => setTimeout(r, ms));
  *  dans son état normal (à appeler si la connexion échoue). */
 export function lancerConnexion(bouton: HTMLElement): () => void {
   const r = bouton.getBoundingClientRect();
-  sessionStorage.setItem(CLE, JSON.stringify({ x: r.left + r.width / 2, y: r.top + r.height / 2 }));
+  const x = r.left + r.width / 2, y = r.top + r.height / 2;
+  sessionStorage.setItem(CLE, JSON.stringify({ x, y }));
   if (animationsReduites()) return () => sessionStorage.removeItem(CLE);
 
   const rayon = getComputedStyle(bouton).borderRadius || "0px";
@@ -32,8 +40,31 @@ export function lancerConnexion(bouton: HTMLElement): () => void {
     ],
     { duration: 420, easing: EASE, fill: "forwards" },
   );
+
+  // Tant que le serveur vérifie, la pastille respire et émet une onde douce
+  const respiration = bouton.animate(
+    [{ transform: "scale(1)" }, { transform: "scale(1.1)" }, { transform: "scale(1)" }],
+    { duration: 1100, delay: 420, iterations: Infinity, easing: "ease-in-out" },
+  );
+  arreterAttente();
+  const onde = document.createElement("div");
+  Object.assign(onde.style, {
+    position: "fixed", left: `${x - r.height / 2}px`, top: `${y - r.height / 2}px`,
+    width: `${r.height}px`, height: `${r.height}px`, borderRadius: "50%", opacity: "0",
+    border: `2px solid ${getComputedStyle(bouton).backgroundColor}`, pointerEvents: "none", zIndex: "9998",
+  });
+  document.body.appendChild(onde);
+  ondeAttente = onde;
+  onde.animate(
+    [{ transform: "scale(1)", opacity: 0.5 }, { transform: "scale(1.9)", opacity: 0 }],
+    { duration: 1100, delay: 420, iterations: Infinity, easing: "ease-out" },
+  );
+  setTimeout(() => ondeAttente === onde && arreterAttente(), 20000); // sécurité
+
   return () => {
     pli.cancel();
+    respiration.cancel();
+    arreterAttente();
     sessionStorage.removeItem(CLE);
   };
 }
@@ -41,6 +72,7 @@ export function lancerConnexion(bouton: HTMLElement): () => void {
 /** Ouvre l'écran de chargement en cercle depuis le bouton mémorisé. Sans bouton mémorisé
  *  (rechargement de page, accès direct), l'écran garde son simple fondu. */
 export function ouvrirChargement(ecran: HTMLElement) {
+  arreterAttente();
   const brut = sessionStorage.getItem(CLE);
   sessionStorage.removeItem(CLE);
   if (!brut || animationsReduites()) return;

@@ -30,6 +30,7 @@ html,body{width:1904px;height:896px;overflow:hidden;background:#fff;font-family:
 #dash{width:1904px;height:896px;background:#E9ECF1}
 #logoMask{left:15px;top:10px;width:33px;height:33px;background:#1F2638}
 #ring{width:200px;height:200px;border-radius:50%;border:2px solid rgba(18,155,224,.35);box-shadow:0 0 60px rgba(18,155,224,.25),inset 0 0 40px rgba(18,155,224,.12)}
+#ping{width:37px;height:37px;border-radius:50%;border:2px solid #C25409}
 #landing{width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,.9)}
 </style>
 </head>
@@ -48,6 +49,7 @@ html,body{width:1904px;height:896px;overflow:hidden;background:#fff;font-family:
   </div>
   <div class="abs" id="loginWrap">
     <img class="abs" id="login" src="img/login.jpg">
+    <div class="abs" id="ping"></div>
     <div class="abs" id="btn"><span id="btnText">Se connecter</span></div>
   </div>
   <div class="abs" id="loader">
@@ -66,7 +68,8 @@ html,body{width:1904px;height:896px;overflow:hidden;background:#fff;font-family:
   <svg class="abs" id="cursor" viewBox="0 0 24 24"><path d="M4 2l15 11-6.5 1.2L16 21l-3 1.4-3.4-6.9L4 20z" fill="#111" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
 </div>
 <script>
-const W = 1904, H = 896, FPS = 30, DURATION = 7;
+const W = 1904, H = 896, FPS = 30, DURATION = 8;
+const WAIT = 1.0;                                // vérification du mot de passe simulée (s)
 // Géométrie du symbole officiel (carré de 600) : pastilles de 236, à 183,5 du centre
 const OFFS = [[0, -1], [-1, 0], [1, 0], [0, 1]];
 const BTN = { x: 268.5, y: 611 };               // centre du bouton « Se connecter »
@@ -101,12 +104,18 @@ function seek(t) {
     opacity: 1 - prog(t, .75, .9) });
 
   // 2. Le bouton s'enfonce puis se replie en pastille
-  const press = 1 - .04 * Math.sin(Math.PI * prog(t, .48, .66));
+  // pendant la vérification du mot de passe, la pastille respire et émet une onde
+  const press = 1 - .04 * Math.sin(Math.PI * prog(t, .48, .66)) + .1 * Math.sin(Math.PI * prog(t, 1.0, 1.9));
+  const ping = prog(t, 1.0, 1.9);
+  css($('ping'), { transform: `translate(${BTN.x - 18.5}px,${BTN.y - 18.5}px) scale(${lerp(1, 1.9, outCubic(ping))})`,
+    opacity: ping > 0 && ping < 1 ? .5 * (1 - ping) : 0 });
   const fold = inOut(prog(t, .62, .98));
   const bw = lerp(317, 37, fold);
   css($('btn'), { left: BTN.x - bw / 2 + 'px', width: bw + 'px', borderRadius: lerp(12, 18.5, fold) + 'px',
-    transform: `scale(${press})`, opacity: 1 - prog(t, 1.15, 1.3) });
+    transform: `scale(${press})`, opacity: 1 - prog(t, 1.15 + WAIT, 1.3 + WAIT) });
   $('btnText').style.opacity = 1 - prog(t, .6, .78);
+  // la suite reprend une fois le mot de passe validé
+  t = t < .9 ? t : t < .9 + WAIT ? .9 : t - WAIT;
   // la page de connexion recule légèrement pendant que le chargement s'ouvre
   const back = inOut(prog(t, .85, 1.55));
   css($('login'), { transform: `scale(${1 - .03 * back})`, filter: `blur(${2 * back}px)` });

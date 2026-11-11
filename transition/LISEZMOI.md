@@ -1,8 +1,9 @@
 # Transition connexion → dashboard
 
-Le film `export/transition-connexion-dashboard.mp4` (7 s) montre la transition complète, construite à partir des vraies captures de Coopeo :
+Le film `export/transition-connexion-dashboard.mp4` (8 s) montre la transition complète, construite à partir des vraies captures de Coopeo :
 
 1. **Clic sur « Se connecter »** : le bouton s'enfonce, son texte s'efface et il se replie en pastille orange.
+   Tant que le serveur vérifie l'email et le mot de passe, la pastille respire doucement et émet une onde : le client voit tout de suite que ça travaille. Dans le film, cette attente dure 1 seconde ; dans l'application, elle dure le temps réel de la vérification.
 2. **Ouverture** : l'écran de chargement s'ouvre en cercle depuis le bouton, souligné d'un liseré bleuté. La page de connexion recule légèrement et se floute. Les 4 pastilles Coopeo sortent du bouton en tournoyant et vont se placer au centre.
 3. **Chargement** : « Bonjour Cyrille », les messages qui défilent, les pastilles qui tournent (c'est l'écran du dossier `chargement/`).
 4. **Arrivée** : les pastilles rapetissent et filent en arc se poser exactement sur le logo de la barre latérale. Pendant ce temps, la barre latérale glisse depuis la gauche et les blocs du dashboard montent un par un. Une petite onde marque l'atterrissage sur le logo.
@@ -41,6 +42,7 @@ Mets en place la transition connexion → dashboard :
 
 ## Bon à savoir
 
+- **Si la connexion échoue** (mauvais mot de passe), `annuler()` remet le bouton exactement dans son état normal et retire l'onde.
 - **Si le symbole de la barre latérale n'est pas trouvé** (attribut oublié, page mobile sans barre latérale), l'écran de chargement s'efface en simple fondu : rien ne casse.
 - **Accès direct au dashboard** (page rechargée, lien favori) : il n'y a pas de bouton, donc pas d'ouverture en cercle. L'écran de chargement apparaît en fondu, puis la fin de la transition se joue normalement.
 - **Personnes qui ont désactivé les animations dans leur système** : pas de mouvement, uniquement des fondus.
