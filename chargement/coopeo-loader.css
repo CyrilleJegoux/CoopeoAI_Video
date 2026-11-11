@@ -1,0 +1,199 @@
+/* Écran de chargement Coopeo — animation 100 % CSS, sans vidéo ni image.
+   Les 4 pastilles reprennent la géométrie et les couleurs exactes du symbole officiel
+   (pastilles de 236 px espacées de 183,5 px du centre, dans un carré de 600 px). */
+
+.cl-screen {
+  --cl-pink: #E01E6D;
+  --cl-orange: #F48C03;
+  --cl-green: #0CBF88;
+  --cl-blue: #129BE0;
+  --cl-ink: #0F172A;
+  --cl-muted: #64748B;
+  --cl-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --cl-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --cl-s: 92px;          /* taille du symbole */
+  --cl-loop: 2.4s;       /* durée d'un tour des pastilles */
+  --cl-msg: 1.8s;        /* durée d'affichage de chaque message */
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 42%, rgba(18, 155, 224, .07), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 50% 46%, rgba(244, 140, 3, .05), transparent 70%),
+    #FBFCFE;
+  font-family: var(--cl-sans);
+  color: var(--cl-ink);
+  animation: cl-appear .45s ease-out both;
+}
+
+/* ---------- Le symbole animé ---------- */
+.cl-symbol {
+  position: relative;
+  width: var(--cl-s);
+  height: var(--cl-s);
+  animation: cl-spin var(--cl-loop) infinite;
+}
+.cl-dot {
+  --d: calc(var(--cl-s) * .3933);   /* 236 / 600 */
+  --o: calc(var(--cl-s) * .3058);   /* 183,5 / 600 */
+  --spread: calc(var(--cl-s) * .2);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--d);
+  height: var(--d);
+  margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius: 50%;
+  animation: var(--cl-loop) infinite;
+}
+.cl-dot.p { background: var(--cl-pink);   box-shadow: 0 6px 16px rgba(224, 30, 109, .28); animation-name: cl-p; }
+.cl-dot.o { background: var(--cl-orange); box-shadow: 0 6px 16px rgba(244, 140, 3, .28);  animation-name: cl-o; animation-delay: .04s; }
+.cl-dot.g { background: var(--cl-green);  box-shadow: 0 6px 16px rgba(12, 191, 136, .28); animation-name: cl-g; animation-delay: .08s; }
+.cl-dot.b { background: var(--cl-blue);   box-shadow: 0 6px 16px rgba(18, 155, 224, .28); animation-name: cl-b; animation-delay: .12s; }
+
+/* Le symbole reste au repos, fait un tour complet, puis revient exactement au logo */
+@keyframes cl-spin {
+  0%, 16%  { transform: rotate(0deg); animation-timing-function: cubic-bezier(.65, 0, .35, 1); }
+  80%, 100% { transform: rotate(360deg); }
+}
+/* Pendant le tour, chaque pastille s'écarte du centre puis se rabat avec un petit rebond */
+@keyframes cl-p {
+  0%, 16% { transform: translate(0, calc(var(--o) * -1)) scale(1); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  48%     { transform: translate(0, calc((var(--o) + var(--spread)) * -1)) scale(.8); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  80%     { transform: translate(0, calc(var(--o) * -1)) scale(1.1); }
+  88%     { transform: translate(0, calc(var(--o) * -1)) scale(.96); }
+  94%, 100% { transform: translate(0, calc(var(--o) * -1)) scale(1); }
+}
+@keyframes cl-o {
+  0%, 16% { transform: translate(calc(var(--o) * -1), 0) scale(1); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  48%     { transform: translate(calc((var(--o) + var(--spread)) * -1), 0) scale(.8); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  80%     { transform: translate(calc(var(--o) * -1), 0) scale(1.1); }
+  88%     { transform: translate(calc(var(--o) * -1), 0) scale(.96); }
+  94%, 100% { transform: translate(calc(var(--o) * -1), 0) scale(1); }
+}
+@keyframes cl-g {
+  0%, 16% { transform: translate(var(--o), 0) scale(1); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  48%     { transform: translate(calc(var(--o) + var(--spread)), 0) scale(.8); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  80%     { transform: translate(var(--o), 0) scale(1.1); }
+  88%     { transform: translate(var(--o), 0) scale(.96); }
+  94%, 100% { transform: translate(var(--o), 0) scale(1); }
+}
+@keyframes cl-b {
+  0%, 16% { transform: translate(0, var(--o)) scale(1); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  48%     { transform: translate(0, calc(var(--o) + var(--spread))) scale(.8); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  80%     { transform: translate(0, var(--o)) scale(1.1); }
+  88%     { transform: translate(0, var(--o)) scale(.96); }
+  94%, 100% { transform: translate(0, var(--o)) scale(1); }
+}
+
+/* ---------- Textes ---------- */
+.cl-title {
+  margin: 36px 0 0;
+  font-family: var(--cl-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(26px, 4vw, 34px);
+  letter-spacing: -.01em;
+  line-height: 1.15;
+  text-align: center;
+  animation: cl-rise .6s .15s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+/* Les messages défilent : un par couleur, chacun lié à un univers de Coopeo */
+.cl-messages {
+  position: relative;
+  width: min(360px, 100%);
+  height: 24px;
+  margin-top: 12px;
+}
+.cl-msg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 15px;
+  color: var(--cl-muted);
+  white-space: nowrap;
+  opacity: 0;
+  animation: cl-msg calc(var(--cl-msg) * 4) infinite;
+}
+.cl-msg::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c);
+}
+.cl-msg:nth-child(1) { --c: var(--cl-orange); }
+.cl-msg:nth-child(2) { --c: var(--cl-pink);   animation-delay: var(--cl-msg); }
+.cl-msg:nth-child(3) { --c: var(--cl-green);  animation-delay: calc(var(--cl-msg) * 2); }
+.cl-msg:nth-child(4) { --c: var(--cl-blue);   animation-delay: calc(var(--cl-msg) * 3); }
+@keyframes cl-msg {
+  0%      { opacity: 0; transform: translateY(8px); }
+  4%, 21% { opacity: 1; transform: translateY(0); }
+  25%, 100% { opacity: 0; transform: translateY(-8px); }
+}
+
+/* ---------- Barre de progression (indéterminée) ---------- */
+.cl-bar {
+  position: relative;
+  width: 180px;
+  height: 4px;
+  margin-top: 28px;
+  border-radius: 4px;
+  background: #E8ECF2;
+  overflow: hidden;
+}
+.cl-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--cl-orange), var(--cl-pink), var(--cl-green), var(--cl-blue));
+  animation: cl-bar 1.6s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+@keyframes cl-bar {
+  0%   { transform: translateX(-110%); }
+  100% { transform: translateX(250%); }
+}
+
+.cl-footer {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  color: #94A3B8;
+}
+
+@keyframes cl-appear { from { opacity: 0; } }
+@keyframes cl-rise { from { opacity: 0; transform: translateY(10px); } }
+
+/* Sortie en fondu, à ajouter quand les données sont prêtes */
+.cl-screen.cl-leaving { animation: cl-leave .35s ease-in forwards; }
+@keyframes cl-leave { to { opacity: 0; transform: scale(1.02); } }
+
+/* Personnes sensibles aux animations : on garde seulement des pulsations douces */
+@media (prefers-reduced-motion: reduce) {
+  .cl-symbol, .cl-dot, .cl-bar::after { animation: none; }
+  .cl-dot.p { transform: translate(0, calc(var(--o) * -1)); }
+  .cl-dot.o { transform: translate(calc(var(--o) * -1), 0); }
+  .cl-dot.g { transform: translate(var(--o), 0); }
+  .cl-dot.b { transform: translate(0, var(--o)); }
+  .cl-symbol { animation: cl-pulse 1.6s ease-in-out infinite alternate; }
+  .cl-bar::after { left: 0; width: 100%; animation: cl-pulse 1.6s ease-in-out infinite alternate; }
+  @keyframes cl-pulse { from { opacity: .55; } to { opacity: 1; } }
+}
